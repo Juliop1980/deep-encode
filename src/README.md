@@ -1,4 +1,4 @@
-# awt-pj-ws21-22-deepencode-2
+# AWT PJ WS 21/22 Deep Encode 2
 
 Repository for training and evaluation of different machine learning models to reduce the number of test encodes needed to identify the optimal encoding settings.
 
