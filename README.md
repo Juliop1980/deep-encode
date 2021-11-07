@@ -10,6 +10,10 @@ Video streaming content differs in terms of complexity and requires title-specif
 
 ### Development
 
+## Set up
+
+## Run
+
 ## Documentation
 
 ## Tests
