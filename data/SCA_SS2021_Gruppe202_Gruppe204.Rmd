@@ -5,65 +5,6 @@ date: "26 6 2021"
 output: pdf_document
 ---
 
-#Aufgaben Modell:
-```{r}
-#mehr oder weniger so wie in HA3 von Amira und mir
-cat("
-1) alle Daten in trips Agg Raw
-Es fehlen Wetterdaten (Linus aufgabe von vor 3 Wochen, z.B. Sonneschein Faktor, Grad, Niederschlag in Liter pro Stunde etc.) und die Zeit die bei Schleusen gebraucht wird (Linus aufgabe zu heute)
-besondereEreignisse, Ferien, Wochentag usw. bereits drin)
-Vielleicht fehlt noch eine weitere")
-cat("
-2) OTD oder sowas über den Datenpunkt
-für jeden trip, guckt mal in Isis die verschiedenen Werte, wenn nichts passt, nehmen wir einen eigenen Wert)")
-cat("
-3) stärksten correlierenden Effekte gegenüber unserer 2) raussuchen
-  siehe HA3:  
-  
-  # Unsortierte Tabelle mit externen Effekten in Korrelation zur IFR
-korrelationIFR = data.frame(t(cor(AHLexternals$IFR, AHLexternals[c(6:27)])))
-colnames(korrelationIFR) = c(Korrelation)
-korrelationIFR$Korrelation = round(korrelationIFR$Korrelation, 3)
-korrelationIFR ")
-cat("
-4) Lineare Regression:
-  5) Baseline ausrechnen (durchschnitt von unser in 2) gewählten On time Delivery oder sowas)
-  
-  6) nach Fehlerkennzahlen bewerten (MAE, SMape, mape etc.)
-  
-  7) In trainings und test set aufteilen (set.seed(122313))
-  
-  ")
-cat("
-8) Forward Selection: 
-  9) Univaritante ( model1 = lm(..), model2 = lm(...) usw.)
-  10) immer weiter machen bis zum Ende (schleifen = menge an Variablen)
-11) Ergebnisse gegenüber den anderen testset testen
-")
-cat("
-12) leicht anders: kriegen wir den lower, upper, und fit, mit predict 
-")
-```
-
-
-
-<!-- install.packages("ggmap") -->
-<!-- install.packages("dplyr") -->
-<!-- install.packages("datetime") -->
-
-
-```{r, eval=FALSE}
-# install.packages("dummies")
-# install.packages("ggplot2")
-# install.packages("Metrics")
-# install.packages("GGally")
-# install.packages("dplyr")
-# install.packages("tidyr")
-# install.packages("forecast")
-# install.packages("ggmap")
-# install.packages("datetime")
-```
-
 ```{r}
 library("dummies")
 library("ggplot2")
@@ -74,13 +15,11 @@ library("tidyr")
 library("forecast")
 library("ggmap")
 library("datetime")
+library("fpc")
 ```
 
 
-
-
-
-#Daten einlesen
+# Daten einlesen
 ```{r}
 tripsAgg_Raw = read.csv2("trips_aggregated.csv",sep=",")
 tripsRaw = read.csv2("trips_raw.csv",sep=",")
@@ -96,10 +35,7 @@ wetter_stationen = read.csv2("wetter_stations.csv", sep = ",")
 ```
 
 
-
-
-
-#Summary/head/str
+# summary/head/str
 ```{r}
 summary(tripsAgg_Raw)
 summary(tripsRaw)
@@ -121,7 +57,7 @@ head(wetter_stationen)
 ```
 
 
-# transform Data und Data bereinigen
+# Datentransformation und -bereinigung
 ```{r}
 # trips  -> Koordinaten char -> Int
 tripsAgg_Raw$longitudeStart = as.numeric(tripsAgg_Raw$longitudeStart)
@@ -153,17 +89,16 @@ tripsRaw$draught = as.numeric(tripsRaw$draught)
 tripsRaw$timestampPosition = as.POSIXct(tripsRaw$timestampPosition, format="%Y-%m-%d %H:%M:%S")
 # replace rows with NA in draught if wert <= 2
 tripsRaw$draught[which(tripsAgg_Raw$draught <= 2)] <- NA
-#Schleuse
+# Schleuse
 schleuse$latitude = as.numeric(schleuse$latitude)
 schleuse$longitude = as.numeric(schleuse$longitude)
-#haefen
+# Häfen
 haefen$latitude = as.numeric(haefen$latitude)
 haefen$longitude = as.numeric(haefen$longitude)
-#waterlevel
+# Waterlevel
 waterLevel$id = as.factor(waterLevel$id)
 waterLevelStations$id = as.factor(waterLevelStations$id)
-# Destination als ROTTERDAM
-# Datenbereinigung:
+# Destination als ROTTERDAM Datenbereinigung
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "RQTTERDAM"] <- "ROTTERDAM"
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "ROTTEERDAM"] <- "ROTTERDAM"
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "NLRTM00697DOCKX0001"] <- "ROTTERDAM"
@@ -172,15 +107,12 @@ tripsAgg_Raw$destination[tripsAgg_Raw$destination == "NLRTM01201DOCKX00015"] <- 
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "NLRTM01202DOCKX0003"] <- "ROTTERDAM"
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "NLRTM01202DOCKX00038"] <- "ROTTERDAM"
 tripsAgg_Raw$destination[tripsAgg_Raw$destination == "NLXXX01207DOCKX00012"] <- "ROTTERDAM"
+tripsAgg_Raw$longitudeEnd[tripsAgg_Raw$longitudeEnd <= 4.59] <- 4.660864
+tripsAgg_Raw$latitudeEnd[tripsAgg_Raw$latitudeEnd >= 51.91] <- 51.818462
 # Feiertage 2019
-Feiertage$Datum = as.Date(Feiertage$Datum, format = "%d %B %Y" )
-#Quellen
-#https://fryslan-sailor.com/praktische-infos/schulferien-niederlande
-#https://www.schulferien.org/deutschland/ferien/2019/
-#https://www.elwis.de/DE/dynamisch/mvc/main.php?modul=schleuse&action=search
-#https://www.dwd.de/DE/leistungen/besondereereignisse/stuerme/download_tabelle.html
-cat("Niederschlag nur einmal von Bedeutung")
-#numeric machen
+Feiertage$Datum = as.Date(Feiertage$Datum, format = "%d %B %Y")
+
+# numeric machen
 ferien$longitudeStart = as.numeric(ferien$longitudeStart)
 ferien$longitudeEnd = as.numeric(ferien$longitudeEnd)
 ferien$latitudeStart = as.numeric(ferien$latitudeStart)
@@ -188,13 +120,13 @@ ferien$latitudeEnd = as.numeric(ferien$latitudeEnd)
 besondereEreignisse$longitude = as.numeric(besondereEreignisse$longitude)
 besondereEreignisse$latitude = as.numeric(besondereEreignisse$latitude)
 besondereEreignisse$longitudeEnde = as.numeric(besondereEreignisse$longitudeEnde)
-#zum Date Format
+# zum Date Format
 ferienAll$ferienStart <- as.Date(ferienAll$ferienStart, format = "%Y-%m-%d")
 ferienAll$ferienEnde <- as.Date(ferienAll$ferienEnde, format = "%Y-%m-%d")
 besondereEreignisse$Start <- as.Date(besondereEreignisse$Start, format = "%Y-%m-%d")
 besondereEreignisse$Ende <- as.Date(besondereEreignisse$Ende, format = "%Y-%m-%d")
 tripsRaw$timestampPositionDate <- as.Date(tripsRaw$timestampPosition, format = "%Y-%m-%d")
-#numeric machen
+# numeric machen
 ferienAll$longitudeStart = as.numeric(ferienAll$longitudeStart)
 ferienAll$longitudeEnd = as.numeric(ferienAll$longitudeEnd)
 ferienAll$latitudeStart = as.numeric(ferienAll$latitudeStart)
@@ -203,7 +135,7 @@ ferienAll$latitudeEnd = as.numeric(ferienAll$latitudeEnd)
 
 # Dauer der Tour einfuegen und Daten transformation
 ```{r}
-#Weekday für alle Daten
+# Weekday für alle Daten
 waterLevel$weekday <- strftime(waterLevel$measuretime, "%A")
 tripsAgg_Raw$weekdayStart <- strftime(tripsAgg_Raw$timeStart, "%A")
 tripsAgg_Raw$weekdayStartNumber <- as.numeric(strftime(tripsAgg_Raw$timeStart, "%w"))
@@ -211,25 +143,86 @@ tripsAgg_Raw$StartMonth <-strftime(tripsAgg_Raw$timeStart, "%B")
 tripsAgg_Raw$weekdayEnd <- strftime(tripsAgg_Raw$timeEnd, "%A")
 tripsAgg_Raw$weekdayEndNumber <- as.numeric(strftime(tripsAgg_Raw$timeEnd, "%w"))
 tripsAgg_Raw$Datum <- as.Date(tripsAgg_Raw$timeEnd, format = "%y-%m-%d")
-#Dauer der Tour
+# Dauer der Tour
 tripsAgg_Raw$dauerTourTage = as.vector(difftime(tripsAgg_Raw$timeEnd, tripsAgg_Raw$timeStart, units='days'))
 tripsAgg_Raw$dauerTourStunden = as.vector(difftime(tripsAgg_Raw$timeEnd, tripsAgg_Raw$timeStart, units='hours'))
-#als nummer (0=Sonntag)
+# als nummer (0=Sonntag)
 waterLevel$weekdayNumber <- as.numeric(strftime(waterLevel$measuretime, "%w"))
-#als Monat
+# als Monat
 waterLevel$monat <- strftime(waterLevel$measuretime, "%m")
 tripsAgg_Raw$monatStartNumber <- as.numeric(strftime(tripsAgg_Raw$timeStart, "%m"))
-tripsAgg_Raw$monatEndtNumber <- as.numeric(strftime(tripsAgg_Raw$timeEnd, "%m"))
+tripsAgg_Raw$monatEndNumber <- as.numeric(strftime(tripsAgg_Raw$timeEnd, "%m"))
 tripsAgg_Raw$weekdayEndNumber <- as.numeric(strftime(tripsAgg_Raw$timeEnd, "%w"))
 tripsAgg_Raw$WocheStartNumber <- as.numeric(strftime(tripsAgg_Raw$timeStart, "%U"))
 tripsAgg_Raw$WocheEndtNumber <- as.numeric(strftime(tripsAgg_Raw$timeEnd, "%U"))
-# # Triptime of different Ship
-# ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden, colour = typeOfShipId))+ geom_line()
-# # Triptime 
-# ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden))+ geom_line()
+tripsAgg_Raw$Jahreszeit = ifelse(tripsAgg_Raw$monatEndNumber == 12 | tripsAgg_Raw$monatEndNumber <= 2,1, ifelse(tripsAgg_Raw$monatEndNumber <= 5,2, ifelse(tripsAgg_Raw$monatEndNumber <= 8,3, ifelse(tripsAgg_Raw$monatEndNumber == 12 | tripsAgg_Raw$monatEndNumber <= 11,4, 0))))
+
 ```
 
+# ShipArten
+```{r}
+str(tripsAgg_Raw)
+summary(tripsAgg_Raw)
+tripsAgg_Raw <- tripsAgg_Raw%>% mutate(tripsAgg_Raw, ArtenShip= ifelse((typeOfShipId == "70.0" |typeOfShipId == "79.0"), "Cargo", "Tanker"))
+tripsAgg_Raw$ArtenShip = as.factor(tripsAgg_Raw$ArtenShip)
+ggplot(tripsAgg_Raw, aes(ArtenShip, dauerTourStunden)) + 
+  geom_boxplot(width = 0.5) +
+  labs(title = "Verteilung der Fahrtdauer in Stunden nach Schiffart", x = "Schiffart", y = "Fahrtdauer in Stunden")
+aggregate(dauerTourStunden~ArtenShip, tripsAgg_Raw,mean)
+```
+# Cluster
+```{r}
+# Fuer das hierarchisches Clustering muss zunaechst eine Distanz-Matrix erzeugt werden.
+# Distanzmatrix erzeugen
+dis_tripsAgg = dist(tripsAgg_Raw, method = "euclidean")
+#Auf Basis der Distanzmatrix wird das Clustering durchgefuehrt.
+# Clustering durchfuehren
+clust_tripsAgg = hclust(dis_tripsAgg, method = "ward.D")
+# Visualisierung des hierarchischen Clustering durch Dendrogram
+plot(clust_tripsAgg)
+# Hoehenunterschiede
+# x-Achse: 2 Cluster bis 8 Cluster (der fuer uns interessante Bereich)
+# y-Achse: Die absolute Höhe des entsprechenden Clusterings - die absolute Höhe des nächsten Clusterings
+ggplot(data = NULL, aes(x = 2:8, 
+                        y = clust_tripsAgg$height[length(clust_tripsAgg$height) : (length(clust_tripsAgg$height) - 6)] -
+                            clust_tripsAgg$height[(length(clust_tripsAgg$height) - 1) : (length(clust_tripsAgg$height) - 7)])) +
+                            geom_point()
+# **Bewertung:** Je weiter auseinander zwei aufeinanderfolgende Clusterings sind (absolute Höhe[n] - absolute Höhe[n - 1]) desto stabiler ist das entsprechende Clustering[n]. Die ersten paar Clusterings [n = 2, 3] sind von Natur aus weiter auseinander und sind für uns erst einmal nicht interessant. Aus der Visualisierung erscheinen jedoch 4 Cluster eine gewisse Haltbarkeit zu besitzen, da diese in der Grafik lokale Spitzen zeigen. 
+# Bewertung nach Kennzahlen
+# Fuer die oben ermittelten Cluster (3,4,5 Cluster) werden Kennzahlen ermittelt. Dazu muss das Clustering-Modell in die entsprechenden Cluster aufgeteilt werden
+clust_tripsAgg_2 = cutree(clust_tripsAgg, k = 2)
+clust_tripsAgg_3 = cutree(clust_tripsAgg, k = 3)
+clust_tripsAgg_4 = cutree(clust_tripsAgg, k = 4)
+clust_tripsAgg_5 = cutree(clust_tripsAgg, k = 5)
+# Cluster-Statistiken ermitteln
+c_stats2 = cluster.stats(dis_tripsAgg, clust_tripsAgg_2)
+c_stats4 = cluster.stats(dis_tripsAgg, clust_tripsAgg_4)
+c_stats3 = cluster.stats(dis_tripsAgg, clust_tripsAgg_3)
+c_stats5 = cluster.stats(dis_tripsAgg, clust_tripsAgg_5)
+# DataFrame erzeugen um Cluster-Statistiken extrahieren und vergleichen
+evaluation_cluster = data.frame(cluster = c(2,3,4,5),
+                        silhouette = c(c_stats2$avg.silwidth,c_stats3$avg.silwidth,
+                                       c_stats4$avg.silwidth, 
+                                       c_stats5$avg.silwidth),
+                        CalinskiHarabasz = c(c_stats2$ch,c_stats3$ch, c_stats4$ch, c_stats5$ch),
+                        dunn = c(c_stats2$dunn, c_stats3$dunn, c_stats4$dunn, c_stats5$dunn))
+evaluation_cluster
+cat("cluster 4 ist am besten")
+# Spalte mit Cluster Informationen anfuegen
+tripsAgg_Raw = cbind(tripsAgg_Raw, clust_tripsAgg_4)
+head(tripsAgg_Raw)
+# visuallisierung 
+tripsAgg_Raw$clust_tripsAgg_4 = as.factor(tripsAgg_Raw$clust_tripsAgg_4)
+ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden, colour = clust_tripsAgg_4))+ geom_point()
+ggplot(tripsAgg_Raw, aes(clust_tripsAgg_4, dauerTourStunden))+ geom_point()
+```
 
+# Ausreiser loesen
+```{r}
+tripsAgg_Raw<- filter(tripsAgg_Raw,longitudeEnd>= 4.52)
+```
+
+# Wetter
 ```{r}
 # Wetter Daten
 wetter_stationen$tavg = as.numeric(wetter_stationen$tavg)
@@ -247,7 +240,7 @@ tripsAgg_Raw$wspd = aggregate(wspd ~ tripName, data = tripsRaw, mean)$wspd
 tripsAgg_Raw$prcp = aggregate(prcp ~ tripName, data = tripsRaw, mean)$prcp
 ```
 
-
+# Schleuse
 ```{r} 
 trip = data.frame(tripsAgg_Raw[,2])
 schleusenPosLng = schleuse[1,3]
@@ -262,7 +255,7 @@ for(i in 1:nrow(trip)) {
       
       trip[i , 6] =   difftime( trip[i , 4], trip[i , 5], units='hour')
 }
-    names(trip)[1] = "tripName"
+names(trip)[1] = "tripName"
 names(trip)[6] = "Schleuse"
 tripsAgg_Raw$SchleusenZeit = as.numeric(aggregate(Schleuse ~ tripName, data = trip, sum)$Schleuse)
 ```
@@ -272,11 +265,10 @@ tripsAgg_Raw$SchleusenZeit = as.numeric(aggregate(Schleuse ~ tripName, data = tr
 ```{r}
 tripsAgg_Raw <- tripsAgg_Raw %>%
   mutate(delay = difftime(timestampEta, timeEnd, units='hours')) 
-  
 ```
 
 
-#Dauer ohne Pause erstellen
+# Dauer ohne Pause erstellen
 ```{r}
 # Pause(if speed <= 0.5) for each trip in TripRaw
 tripsRaw$CountSpeed0<-ifelse(tripsRaw$speedOverGround<=0.5,T,F)
@@ -286,12 +278,20 @@ Pause <- aggregate(CountSpeed0~tripName, tripsRaw, sum)
 Pause$PauseTime = (Pause$CountSpeed0)*10/60
 # add Pausetime to tripAgg
 tripsAgg_Raw= left_join(tripsAgg_Raw, Pause, by = 'tripName') %>%
-  mutate(DauerohnePause = dauerTourStunden-PauseTime)
-ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden, colour = typeOfShipId))+ geom_point()
+  mutate(DauerohnePause = dauerTourStunden-Pause$PauseTime)
+ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden, colour = typeOfShipId))+  
+  geom_point() +
+  labs(title = "Dauer der Fahrten je Schiff-ID über das Jahr 2019", x = "Datum", y = "Fahrtdauer in Stunden") +
+  scale_colour_discrete("Schiff-ID")
 # different ships with Dauer without Pause: Ausreisser finden 
-ggplot(tripsAgg_Raw, aes(typeOfShipId, DauerohnePause))+ geom_point()
-ggplot(tripsAgg_Raw, aes(typeOfShipId, dauerTourStunden))+ geom_point()
+ggplot(tripsAgg_Raw, aes(typeOfShipId, DauerohnePause)) + 
+  geom_boxplot(width=0.5) +
+  labs(title = "Dauer der Fahrten ohne Pause je Schiff-ID", x = "Schiff-ID", y = "Fahrtdauer in Stunden ohne Pause")
+ggplot(tripsAgg_Raw, aes(typeOfShipId, dauerTourStunden)) + 
+  geom_boxplot(width=0.5) +
+  labs(title = "Dauer der Fahrten je Schiff-ID", x = "Schiff-ID", y = "Fahrtdauer in Stunden")
 ```
+
 # Durchschnittliche Geschwindigkeit
 ```{r}
 Av_Speed <- aggregate(speedOverGround~tripName, tripsRaw, mean)
@@ -300,7 +300,10 @@ tripsAgg_Raw<- merge(tripsAgg_Raw,Av_Speed, by = "tripName")
 
 # Durchschnittliche Geschwindigkeit mit Type of Ships
 ```{r}
-ggplot(tripsAgg_Raw, aes(weekdayStart, speedOverGround, colour = typeOfShipId))+ geom_point()
+ggplot(tripsAgg_Raw, aes(weekdayStart, speedOverGround, colour = typeOfShipId)) + 
+  geom_point() +
+  labs(title = "Durchschnittliche Geschwindigkeit nach Start-Wochentag je Schiff-ID", x = "Start der Fahrt in Wochentagen", y = "Durchschnittliche Geschwindigkeit des Schiffs") +
+  scale_colour_discrete("Schiff-ID")
 # average spped of type of ships
 aggregate(speedOverGround~typeOfShipId,tripsAgg_Raw,mean)
 # count different ships with weekdaystart 
@@ -312,7 +315,7 @@ cat("80 ist schneller und 70 ist langsamer")
 
 # Visualisierung von Start/Endtag 
 ```{r}
-# Datenvisualisierung
+#Datenvisualisierung
 ggplot(tripsAgg_Raw, aes(x = factor(weekdayStart, level = c('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')))) +
   geom_bar(fill = "cornflowerblue") +
   geom_text(stat='count', aes(label=..count..), vjust=-1) +
@@ -338,7 +341,8 @@ Dauer_StartEnd
 Deuer_Month = aggregate(dauerTourStunden ~ StartMonth, tripsAgg_Raw, mean )
 ```
 
-# Feather: ob Sonntag:# Spalten ob Schiff am Sonntag start und ankommt erstellen
+# Feather: ob Sonntag
+# Spalten ob Schiff am Sonntag start und ankommt erstellen
 ```{r}
 # StartSon(if Sonntag, True) 
 tripsAgg_Raw$StartSon<-ifelse(tripsAgg_Raw$weekdayStart== "Sonntag",T,F)
@@ -346,10 +350,6 @@ tripsAgg_Raw$StartSon<-ifelse(tripsAgg_Raw$weekdayStart== "Sonntag",T,F)
 tripsAgg_Raw$EndSon<-ifelse(tripsAgg_Raw$weekdayEnd== "Sonntag",T,F)
 ## Start am Sonntag dauer langer 
 ```
-
-
-
-
 
 # Feather: waterlevel
 # merge waterlevel and waterlevelstation to Koordinaten_waterLevel
@@ -365,130 +365,136 @@ Koordinaten_waterLevel$WaterLevel = as.numeric(Koordinaten_waterLevel$value)
 # Feather: waterlevel
 # visualisierung waterlevel of 11 stations in 2019
 ```{r}
-ggplot(Koordinaten_waterLevel, aes(Datum, WaterLevel, colour = id))+ geom_line()
+ggplot(Koordinaten_waterLevel, aes(Datum, WaterLevel, colour = id)) + 
+  geom_line() +
+  labs(title = "Höhe des Wasser-Levels über das Jahr 2019", x = "Datum", y = "Wasser-Level") +
+  scale_colour_discrete("ID")
 ## ID FTS49972718333 hat die meisten Niederschläge, Koordination: 49.972718333, 7.900803333
 ## ID FTS5010648 (50.10648, 8.716451667) hat die wenigesten Niederschlage.Es ist auch Endstation
 ## Sasionlitaet: Maerz bis April, Mai bis Juni, Dezember bis Janaur mehr Wasser!
 ## Sasionlitaet: Trockenzeit Sep bis Okot! 
 ```
+
 # Feather: waterlevel
-#waterLevel and tripAgg_Raw verbinden
+# waterLevel and tripAgg_Raw verbinden
 ```{r}
-#mittelwert von untershiedlichen Messstationen
+# mittelwert von untershiedlichen Messstationen
 waterlevel_mean <-aggregate(WaterLevel~Datum,Koordinaten_waterLevel, mean)
 # Warerlevel_mean zu tripsAgg_Raw einfugen
 tripsAgg_Raw= left_join(tripsAgg_Raw, waterlevel_mean, by = 'Datum')
 ```
 
 
-#Bundesland fertig
+# Bundesland fertig
 ```{r}
-#Bundesland richtig
+# Bundesland richtig
 tripsRaw$bundesland= ifelse((tripsRaw$longitude >= ferienAll[ferienAll$Bundesland == "Hessen1",]$longitudeStart), "Hessen" , ifelse((tripsRaw$longitude >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz1",]$longitudeStart), "RheinlandPfalz" , ifelse((tripsRaw$longitude >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen1",]$longitudeStart), "NordrheinWestfahlen" , ifelse((tripsRaw$longitude >= ferienAll[ferienAll$Bundesland == "GelderlandSud1",]$longitudeStart), "GelderlandSud" , ifelse((tripsRaw$longitude >= ferienAll[ferienAll$Bundesland == "Sudholland1",]$longitudeStart), "Sudholland" , "nooooooo")))))
-#Bundeslander Grenzübergänge
-qmplot(longitudeStart, latitudeStart, data = ferienAll, maptype = "terrain", zoom = 7, color = I("red"))
+tripsRaw$bundesland
+
 ```
 
-#Ferien alle --> Fertig
+# Ferien alle 
 ```{r}
 cat("Aufgrund des Zeichen Limits bei Funktionen, habe ich diesen relativ hässlichen Weg gewählt!")
-#Nordrhein_Westfalen Ferien
-#1 Ja Ferien
-#2 Nein keine Ferien
+# Nordrhein_Westfalen Ferien
+# 1 Ja Ferien
+# 2 Nein keine Ferien
 tripsRaw$bundeslandNordrheinWestfahlen01 = ifelse(tripsRaw$bundesland == "NordrheinWestfahlen", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen1",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen2",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen3",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen4",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen5",]$ferienEnde), 1 , 0))))), 0)
 tripsRaw$bundeslandNordrheinWestfahlenSchriftlich =  ifelse(tripsRaw$bundesland == "NordrheinWestfahlen",ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen1",]$ferienEnde),"NordrheinWestfahlen 1 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen2",]$ferienEnde),"NordrheinWestfahlen 2 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen3",]$ferienEnde),"NordrheinWestfahlen 3 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen4",]$ferienEnde),"NordrheinWestfahlen 4 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "NordrheinWestfahlen5",]$ferienEnde),"NordrheinWestfahlen 5 Ferien", "keine Ferien NordrheinWestfahlen"))))), "NRW nicht")
-#Hessen Ferien
-#1 Ja Ferien
-#2 Nein keine Ferien
+# Hessen Ferien
+# 1 Ja Ferien
+# 2 Nein keine Ferien
 tripsRaw$bundeslandHessen01 = ifelse(tripsRaw$bundesland == "Hessen", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen1",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen2",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen3",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen4",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen5",]$ferienEnde), 1 , 0))))), 0)
 tripsRaw$bundeslandHessenSchriftlich = ifelse(tripsRaw$bundesland == "Hessen",ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen1",]$ferienEnde),"Hessen 1 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen2",]$ferienEnde),"Hessen 2 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen3",]$ferienEnde),"Hessen 3 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen4",]$ferienEnde),"Hessen 4 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Hessen5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Hessen5",]$ferienEnde),"Hessen 5 Ferien", "keine Ferien Hessen"))))), "Hessen nicht")
-#RheinlandPfalz Ferien
-#1 Ja Ferien
-#2 Nein keine Ferien
+# RheinlandPfalz Ferien
+# 1 Ja Ferien
+# 2 Nein keine Ferien
 tripsRaw$bundeslandRheinlandPfalz01 = ifelse(tripsRaw$bundesland == "RheinlandPfalz", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz1",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz2",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz3",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz4",]$ferienEnde),1 , ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz5",]$ferienEnde), 1 ,ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz6",]$ferienEnde), 1 , 0)))))), 0)
 tripsRaw$bundeslandRheinlandPfalzSchriftlich = ifelse(tripsRaw$bundesland == "RheinlandPfalz",ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz1",]$ferienEnde),"RheinlandPfalz 1 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz2",]$ferienEnde),"RheinlandPfalz 2 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz3",]$ferienEnde),"RheinlandPfalz 3 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz4",]$ferienEnde),"RheinlandPfalz 4 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz5",]$ferienEnde),"RheinlandPfalz 5 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "RheinlandPfalz6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "RheinlandPfalz6",]$ferienEnde),"RheinlandPfalz 6 Ferien", "keine Ferien RheinlandPfalz")))))),"Rheinland Pfalz nicht")
-#GelderlandSud Ferien
-#1 Ja Ferien
-#2 Nein keine Ferien
+# GelderlandSud Ferien
+# 1 Ja Ferien
+# 2 Nein keine Ferien
 tripsRaw$bundeslandGelderlandSud01 = ifelse(tripsRaw$bundesland == "GelderlandSud", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud1",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud2",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud3",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud4",]$ferienEnde),1 , ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud5",]$ferienEnde), 1 ,ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud6",]$ferienEnde), 1 , 0)))))), 0)
 tripsRaw$bundeslandGelderlandSudSchriftlich = ifelse(tripsRaw$bundesland == "GelderlandSud",ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud1",]$ferienEnde),"GelderlandSud 1 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud2",]$ferienEnde),"GelderlandSud 2 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud3",]$ferienEnde),"GelderlandSud 3 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud4",]$ferienEnde),"GelderlandSud 4 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud5",]$ferienEnde),"GelderlandSud 5 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "GelderlandSud6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "GelderlandSud6",]$ferienEnde),"GelderlandSud 6 Ferien", "keine Ferien GelderlandSud")))))),"GelderlandSud nicht")
-#SudHolland Ferien
-#1 Ja Ferien
-#2 Nein keine Ferien
+# SudHolland Ferien
+# 1 Ja Ferien
+# 2 Nein keine Ferien
 tripsRaw$bundeslandSudholland01 = ifelse(tripsRaw$bundesland == "Sudholland", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland1",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland2",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland3",]$ferienEnde),1, ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland4",]$ferienEnde),1 , ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland5",]$ferienEnde), 1 ,ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland6",]$ferienEnde), 1 , 0)))))), 0)
 tripsRaw$bundeslandSudhollandSchriftlich = ifelse(tripsRaw$bundesland == "Sudholland",ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland1",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland1",]$ferienEnde),"Sudholland 1 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland2",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland2",]$ferienEnde),"Sudholland 2 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland3",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland3",]$ferienEnde),"Sudholland 3 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland4",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland4",]$ferienEnde),"Sudholland 4 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland5",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland5",]$ferienEnde),"Sudholland 5 Ferien", ifelse((tripsRaw$timestampPositionDate >= ferienAll[ferienAll$Bundesland == "Sudholland6",]$ferienStart & tripsRaw$timestampPositionDate <= ferienAll[ferienAll$Bundesland == "Sudholland6",]$ferienEnde),"Sudholland 6 Ferien", "keine Ferien Sudholland")))))),"Sudholland nicht")
-#Ferien gemerged:
+# Ferien gemerged:
 tripsRaw$FerienKomplett = ifelse(tripsRaw$bundeslandSudholland01 == 1 | tripsRaw$bundeslandGelderlandSud01 == 1 | tripsRaw$bundeslandRheinlandPfalz01 == 1 | tripsRaw$bundeslandHessen01 == 1 | tripsRaw$bundeslandNordrheinWestfahlen01 == 1, 1, 0)
-#Ferien in tripsAgg_Raw
+# Ferien in tripsAgg_Raw
 tripsAgg_Raw$FerienHaufigkeit = aggregate(FerienKomplett ~ tripName, data = tripsRaw, sum)$FerienKomplett
-tripsAgg_Raw$FerienJaNein = ifelse(tripsAgg_Raw$FerienHaufigkeit >= 1 , 1, 0) # todo: Vinz FIX ESS!!! :)
-#BesondereEreignisse
-#SchleusenSperre
+tripsAgg_Raw$FerienJaNein = ifelse(tripsAgg_Raw$FerienHaufigkeit >= 1 , 1, 0) 
+
+# BesondereEreignisse
+
+# SchleusenSperre
 tripsRaw$SchleusenSperreKostheim = ifelse(tripsRaw$longitude >= besondereEreignisse[besondereEreignisse$Ort == "KostheimNordschleuse",]$longitude & tripsRaw$longitude <= besondereEreignisse[besondereEreignisse$Ort == "KostheimNordschleuse",]$longitudeEnde & tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Ort == "KostheimNordschleuse",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Ort == "KostheimNordschleuse",]$Ende, 1,0)
 tripsRaw$SchleusenSperreGriesheim = ifelse(tripsRaw$longitude >= besondereEreignisse[besondereEreignisse$Ort == "GriesheimNordschleuse",]$longitude & tripsRaw$longitude <= besondereEreignisse[besondereEreignisse$Ort == "GriesheimNordschleuse",]$longitudeEnde & tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Ort == "GriesheimNordschleuse",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Ort == "GriesheimNordschleuse",]$Ende, 1, 0)
 tripsRaw$SchleusenSperreOffenbach = ifelse(tripsRaw$longitude >= besondereEreignisse[besondereEreignisse$Ort == "OffenbachSchleuse",]$longitude & tripsRaw$longitude <= besondereEreignisse[besondereEreignisse$Ort == "OffenbachSchleuse",]$longitudeEnde & tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Ort == "OffenbachSchleuse",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Ort == "OffenbachSchleuse",]$Ende, 1,0)
 tripsRaw$SchleusenSperreAlle = (tripsRaw$SchleusenSperreGriesheim + tripsRaw$SchleusenSperreKostheim + tripsRaw$SchleusenSperreOffenbach)
 tripsAgg_Raw$SchleusenSperre = aggregate(SchleusenSperreAlle ~ tripName, data = tripsRaw, sum)$SchleusenSperre
-#Orkan
-#OrkanStarkEberhard
+
+# Orkan
+# OrkanStarkEberhard
 tripsRaw$OrkanEberhard = ifelse(tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Grund == "OrkanBoenEberhardSehrStark",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Grund == "OrkanBoenEberhardSehrStark",]$Ende, 1, 0)
-#OrkanStarkEberhard
+
+# OrkanStarkEberhard
 tripsRaw$OrkanBennet = ifelse(tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Grund == "OrkanBoenBennetMediumStark",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Grund == "OrkanBoenBennetMediumStark",]$Ende, 1, 0)
-cat("Während der Orkan Phasen ist kein einziges Schiff gefahren, guter Punkt für Präsentation (vinzenz)")
 tripsRaw$OrkanAlle =  (tripsRaw$OrkanEberhard + tripsRaw$OrkanBennet)
 tripsAgg_Raw$Orkan = aggregate(OrkanAlle ~ tripName, data = tripsRaw, sum)$Orkan
-#Niederschlag
+
+# Niederschlag
 tripsRaw$NiederschlagStark = ifelse(tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Grund == "starkerNiederschalf",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Grund == "starkerNiederschalf",]$Ende, 1, 0)
 tripsAgg_Raw$NiederschlagStark = aggregate(NiederschlagStark ~ tripName, data = tripsRaw, sum)$NiederschlagStark
-cat("Auch während der starken Niederschlags Phasen ist kein einziges Schiff gefahren, guter Punkt für Präsentation (vinzenz)")
-#extremeHitze
-tripsRaw$extremeHitze = ifelse(tripsRaw$timestampPositionDate >= besondereEreignisse[besondereEreignisse$Grund == "extremeHitze",]$Start & tripsRaw$timestampPositionDate <= besondereEreignisse[besondereEreignisse$Grund == "extremeHitze",]$Ende, 1, 0)
-tripsAgg_Raw$extremeHitze = aggregate(extremeHitze ~ tripName, data = tripsRaw, sum)$extremeHitze
+
 ```
 
 
 
 
----------------------------------------------------------------------------------------
+
 
 ------------------------------------------------------------------
 
-#Map
+# Map
 ```{r}
+#Allgemeine Karte erstellen
 rhein <- c(left = 2, bottom = 48, right = 13, top = 53)
-get_stamenmap(rhein, zoom = 5, maptype = "terrain") %>% ggmap() 
-qmplot(longitudeStart, latitudeStart, data = tripsAgg_Raw, maptype = "terrain", color = I("red"))
-qmplot(longitudeEnd, latitudeEnd, data = tripsAgg_Raw, maptype = "toner-lite", color = I("red"))
-qmplot(longitude, latitude, data = tripsRaw, maptype = "toner-lite", color = I("red"))
-#Nur für ein Vessel:
+get_stamenmap(rhein, zoom = 5, maptype = "terrain",xlab = ("longitude"),ylab = ("latitude"),main = "Allgemeine Karte Gebiet",extent = "normal") %>% ggmap() 
+
+#Abfahrtspunkte
+qmplot(longitudeStart, latitudeStart, data = tripsAgg_Raw, maptype = "terrain", color = I("red"),xlab = ("longitude"),ylab = ("latitude"),main = "Abfahrt",zoom = 12,extent = "normal")
+
+#Ankunftspunkte
+qmplot(longitudeEnd, latitudeEnd, data = tripsAgg_Raw, maptype = "toner-lite", color = I("red"),zoom = 13,xlab = ("longitude"),ylab = ("latitude"),main = "Ankunft",extent = "normal")
+
+#Route
+qmplot(longitude, latitude, data = tripsRaw, maptype = "toner-lite", color = I("red"),xlab = ("longitude"),ylab = ("latitude"),main = "Route",zoom = 8,extent = "normal")
+
+# Nur für ein Vessel:
 dataVessel30 = subset(tripsRaw, vesselName == "vessel_30")
-qmplot(longitude, latitude, data = dataVessel30, maptype = "terrain", color = I("blue"),zoom=8,alpha = I(.5),geom = c("bin2d","point"),extent = "normal")
-#Nur für die Schleuesen:
-qmplot(longitude, latitude, data = schleuse, maptype = "terrain", color = I("red"),xlab = ("Schleuse"),label=("schleuse"),titel="Schleuse",extent = "normal")
-qmplot(longitude, latitude, data = schleuse, geom = c("point","density2d"))
-qmplot(longitude, latitude, data = haefen, maptype = "terrain", color = I("darkblue"),extent = "normal")
-qmplot(longitude, latitude, data = haefen, geom = c("point","density2d"))
-dataVessel30 = subset(tripsRaw, vesselName == "vessel_30")
-qmplot(longitude, latitude, data = dataVessel30, maptype = "terrain", color = I("blue"))
 dataHafen = subset(tripsRaw, length == "135")
-#qmplot(longitude, latitude, data = dataVesselLength13, maptype = "terrain", color = I("red"))
-(
-qmplot(longitude, latitude, data = dataVessel30, maptype = "toner-background", colour = "blue") + 
-  facet_wrap(~ speedOverGround)
-)
+qmplot(longitude, latitude, data = dataVessel30, maptype = "terrain", color = I("blue"),zoom=8,extent = "normal",xlab = ("longitude"),ylab = ("latitude"),main = "Route Vessel30")
+
+#Schleuesen:
+qmplot(longitude, latitude, data = schleuse, maptype = "terrain", color = I("red"),xlab = ("longitude"),ylab = ("latitude"),main = "Schleuse",extent = "normal")
+
+
+
 ```
 
 
-
-
-
 # -----------------------------------------------------------
-#Yue's Versuch
-#neue Spalte, 3 clusters(Abhangigkeit der Position) erzeugen
+# Yue's Versuch
+# neue Spalte, 3 clusters(Abhangigkeit der Position) erzeugen
 ```{r} 
 tripsAgg_Raw <- tripsAgg_Raw%>% mutate(tripsAgg_Raw, cluster= ifelse((longitudeStart >= 8.52499 & latitudeStart >= 50.06973 & longitudeStart <= 8.57 & latitudeStart <= 50.106), 1, ifelse(longitudeStart >= 8.556 & latitudeStart >= 50.0848 & longitudeStart <= 8.6392 & latitudeStart <= 50.096,2,3)))
 tripsAgg_Raw$cluster = as.factor(tripsAgg_Raw$cluster)
-ggplot(tripsAgg_Raw, aes(cluster, dauerTourStunden))+ geom_point()
+ggplot(tripsAgg_Raw, aes(cluster, dauerTourStunden)) + 
+  geom_boxplot(width=0.5) +
+  labs(title = "Dauer der Fahrten in Abhängigkeit zur Startposition", x = "Startpositions-Cluster", y = "Fahrtdauer in Stunden")
 ```
 
 # Geschwidigkeit der Schiffe -> Information: Pausezeit unregelmassig von Trip101
@@ -496,35 +502,40 @@ ggplot(tripsAgg_Raw, aes(cluster, dauerTourStunden))+ geom_point()
 # tripName: 
 tripsRaw%>%
   filter(tripName=="trip_101")%>%
-  ggplot(aes(timestampPosition, speedOverGround))+ geom_point()
+  ggplot(aes(timestampPosition, speedOverGround)) + 
+  geom_point() +
+  labs(title = "Durchschnittliche Geschwindigkeit der Schiffe nach Zeitstempel", x = "Zeitstempel", y = "Durchschnittliche Geschwindigkeit")
   
 ```
 
 ```{r}
-  ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden),color= typeOfShipId)+ geom_point()
+  ggplot(tripsAgg_Raw, aes(Datum, dauerTourStunden, colour = typeOfShipId)) +
+  geom_point() +
+  labs(title = "Dauer der Fahrt je Datum", x = "Datum", y = "Fahrtdauer in Stunden") +
+  scale_color_discrete("Schiff-ID")
 ```
 
+# ______________________________________________________________________________________________________
 
-#______________________________________________________________________________________________________
-
-#Korrelation 
+# Korrelation 
 ```{r}
-#Todo: bessere Tabellen name
-#Correlation von allen Variablen
-korrelation = data.frame(round(cor(tripsAgg_Raw[,c("length","width","draught","dimA","dim","dimC","dimD","SchleusenZeit","tavg","wspd","prcp","weekdayStartNumber","weekdayEndNumber","extremeHitze","NiederschlagStark","Orkan","SchleusenSperre","WaterLevel","monatStartNumber","monatEndtNumber","FerienHaufigkeit","WocheStartNumber","WocheEndtNumber" )],tripsAgg_Raw$dauerTourStunden, use="complete.obs"),3))
+# Correlation von allen Variablen
+korrelation = data.frame(round(cor(tripsAgg_Raw[,c("SchleusenZeit","tavg","wspd","prcp","weekdayStartNumber","weekdayEndNumber","Orkan","SchleusenSperre","WaterLevel","FerienHaufigkeit","monatStartNumber","monatEndNumber","Jahreszeit")],tripsAgg_Raw$dauerTourStunden, use="complete.obs"),3))
+colnames(korrelation) = c("Korrelation")
 korrelation
-#Todo schöner ausgeben
-cat("die Variablen mit der höchsten Correlation sind: FerienHaufigkeit,SchleusenSperre,Orkan,WeekdayEndNumber, extreme Hitze, windspeed")
-ggpairs(tripsAgg_Raw[, c("FerienHaufigkeit", "SchleusenSperre", "weekdayEndNumber", "extremeHitze","wspd")], 
+# Auswahl der 6 am höchsten korrelierenden Variablen
+korrelationTop6 <- head(korrelation %>% arrange(desc(abs(korrelation$Korrelation))),6)
+korrelationTop6
+cat("Die Variablen mit der höchsten Korrelation sind: FerienHaufigkeit, SchleusenSperre, Jahreszeit, Orkan, WeekdayEndNumber, und durchschnittliche Temperatur.")
+ggpairs(tripsAgg_Raw[, c("dauerTourStunden","FerienHaufigkeit", "SchleusenSperre", "Jahreszeit", "Orkan", "weekdayEndNumber","tavg")], 
         
-        # hne Visualisierung des Fortschritts der Erstellung des plots
+        # Ohne Visualisierung des Fortschritts der Erstellung des plots
         progress = FALSE,
         
         # mit Visualisierung einer Glaettungslinie und Aenderung der Farbe der Punkte, damit Linie erkennbar
         lower = list(continuous = wrap("smooth_loess", colour = "aquamarine2")))
 cat("sehen alle gut aus, alle Variablen können benutzt werden")
 ```
-
 
 # Modell 
 ```{r}
@@ -554,11 +565,13 @@ Modell1 = lm(dauerTourStunden ~ FerienHaufigkeit, data = tripsAgg_Raw_Training)
 summary(Modell1)
 Modell2 = lm(dauerTourStunden ~ SchleusenSperre, data = tripsAgg_Raw_Training)
 summary(Modell2)
-Modell4 = lm(dauerTourStunden ~ weekdayEndNumber, data = tripsAgg_Raw_Training)
+Modell3 = lm(dauerTourStunden ~ Jahreszeit, data = tripsAgg_Raw_Training)
+summary(Modell3)
+Modell4 = lm(dauerTourStunden ~ Orkan, data = tripsAgg_Raw_Training)
 summary(Modell4)
-Modell5 = lm(dauerTourStunden ~ extremeHitze, data = tripsAgg_Raw_Training)
+Modell5 = lm(dauerTourStunden ~ weekdayEndNumber, data = tripsAgg_Raw_Training)
 summary(Modell5)
-Modell6 = lm(dauerTourStunden ~ wspd, data = tripsAgg_Raw_Training)
+Modell6 = lm(dauerTourStunden ~ tavg, data = tripsAgg_Raw_Training)
 summary(Modell6)
 # Residuenplot 1
 ggplot(data = NULL, aes(x = Modell1$model$FerienHaufigkeit, y = Modell1$residuals)) + 
@@ -568,134 +581,184 @@ ggplot(data = NULL, aes(x = Modell1$model$FerienHaufigkeit, y = Modell1$residual
 ggplot(data = NULL, aes(x = Modell2$model$SchleusenSperre, y = Modell2$residuals)) + 
   geom_point() + 
   geom_smooth(se = FALSE, method = loess)
+# Residuenplot 3
+ggplot(data = NULL, aes(x = Modell3$model$Jahreszeit, y = Modell3$residuals)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE, method = loess)
 # Residuenplot 4
-ggplot(data = NULL, aes(x = Modell4$model$weekdayEndNumber, y = Modell4$residuals)) + 
+ggplot(data = NULL, aes(x = Modell4$model$Orkan, y = Modell4$residuals)) + 
   geom_point() + 
   geom_smooth(se = FALSE, method = loess)
 # Residuenplot 5
-ggplot(data = NULL, aes(x = Modell5$model$extremeHitze, y = Modell5$residuals)) + 
+ggplot(data = NULL, aes(x = Modell5$model$weekdayEndNumber, y = Modell5$residuals)) + 
   geom_point() + 
   geom_smooth(se = FALSE, method = loess)
 # Residuenplot 6
-ggplot(data = NULL, aes(x = Modell6$model$wspd, y = Modell5$residuals)) + 
+ggplot(data = NULL, aes(x = Modell6$model$tavg, y = Modell5$residuals)) + 
   geom_point() + 
   geom_smooth(se = FALSE, method = loess)
-cat("Residuenplots für extreme Hitze und SchleusenSperre sind erwartenderweise nicht perfekt, aber für unser Modell noch ausreichend, die anderen passen")
+cat("Residuenplots für SchleusenSperre und Orkan sind erwartenderweise nicht perfekt, aber für unser Modell noch ausreichend, die anderen passen")
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("Modell1", "Modell2","Modell4", "Modell5","Modell6"),
-                                        MAE = numeric(5),
-                                        sMAPE = numeric(5)))
+evaluation = rbind(evaluation, data.frame(Model = c("Modell1", "Modell2", "Modell3","Modell4", "Modell5","Modell6"),
+                                        MAE = numeric(6),
+                                        sMAPE = numeric(6)))
 # MAE berechnen
 evaluation[evaluation$Model == "Modell1",]$MAE = round(mean(abs(Modell1$residuals)),4)
 evaluation[evaluation$Model == "Modell2",]$MAE = round(mean(abs(Modell2$residuals)),4)
+evaluation[evaluation$Model == "Modell3",]$MAE = round(mean(abs(Modell3$residuals)),4)
 evaluation[evaluation$Model == "Modell4",]$MAE = round(mean(abs(Modell4$residuals)),4)
 evaluation[evaluation$Model == "Modell5",]$MAE = round(mean(abs(Modell5$residuals)),4)
 evaluation[evaluation$Model == "Modell6",]$MAE = round(mean(abs(Modell6$residuals)),4)
 # sMAPE berechnen
 evaluation[evaluation$Model == "Modell1",]$sMAPE = round(smape(Modell1$model$dauerTourStunden, Modell1$fitted.values),4)
 evaluation[evaluation$Model == "Modell2",]$sMAPE = round(smape(Modell2$model$dauerTourStunden, Modell2$fitted.values),4)
+evaluation[evaluation$Model == "Modell3",]$sMAPE = round(smape(Modell3$model$dauerTourStunden, Modell3$fitted.values),4)
 evaluation[evaluation$Model == "Modell4",]$sMAPE = round(smape(Modell4$model$dauerTourStunden, Modell4$fitted.values),4)
 evaluation[evaluation$Model == "Modell5",]$sMAPE = round(smape(Modell5$model$dauerTourStunden, Modell5$fitted.values),4)
 evaluation[evaluation$Model == "Modell6",]$sMAPE = round(smape(Modell6$model$dauerTourStunden, Modell6$fitted.values),4)
 # Fehler anzeigen
 evaluation
-cat("Mit Modell1 wird weitergemacht, da Modell1 die besten Fehlerkennzahlen + den besten R-Squared Wert aufweist")
-#BivariantenAufstellen
+cat("Mit Modell1 wird weitergemacht, da Modell1 den besten MAE + den besten R-Squared Wert aufweist")
+# BivariantenAufstellen
 Modell12 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre, data = tripsAgg_Raw_Training)
 summary(Modell12)
-Modell14 = lm(dauerTourStunden ~ FerienHaufigkeit + weekdayEndNumber, data = tripsAgg_Raw_Training)
+Modell13 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit, data = tripsAgg_Raw_Training)
+summary(Modell13)
+Modell14 = lm(dauerTourStunden ~ FerienHaufigkeit + Orkan, data = tripsAgg_Raw_Training)
 summary(Modell14)
-Modell15 = lm(dauerTourStunden ~ FerienHaufigkeit + extremeHitze, data = tripsAgg_Raw_Training)
+Modell15 = lm(dauerTourStunden ~ FerienHaufigkeit + weekdayEndNumber, data = tripsAgg_Raw_Training)
 summary(Modell15)
-Modell16 = lm(dauerTourStunden ~ FerienHaufigkeit + wspd, data = tripsAgg_Raw_Training)
+Modell16 = lm(dauerTourStunden ~ FerienHaufigkeit + tavg, data = tripsAgg_Raw_Training)
 summary(Modell16)
 cat("Alle Werte sind Signifikant")
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("Modell12","Modell14", "Modell15","Modell16"),
-                                        MAE = numeric(4),
-                                        sMAPE = numeric(4)))
+evaluation = rbind(evaluation, data.frame(Model = c("Modell12", "Modell13","Modell14", "Modell15","Modell16"),
+                                        MAE = numeric(5),
+                                        sMAPE = numeric(5)))
 # MAE berechnen
 evaluation[evaluation$Model == "Modell12",]$MAE = round(mean(abs(Modell12$residuals)),4)
+evaluation[evaluation$Model == "Modell13",]$MAE = round(mean(abs(Modell13$residuals)),4)
 evaluation[evaluation$Model == "Modell14",]$MAE = round(mean(abs(Modell14$residuals)),4)
 evaluation[evaluation$Model == "Modell15",]$MAE = round(mean(abs(Modell15$residuals)),4)
 evaluation[evaluation$Model == "Modell16",]$MAE = round(mean(abs(Modell16$residuals)),4)
 # sMAPE berechnen
 evaluation[evaluation$Model == "Modell12",]$sMAPE = round(smape(Modell12$model$dauerTourStunden, Modell12$fitted.values),4)
+evaluation[evaluation$Model == "Modell13",]$sMAPE = round(smape(Modell13$model$dauerTourStunden, Modell13$fitted.values),4)
 evaluation[evaluation$Model == "Modell14",]$sMAPE = round(smape(Modell14$model$dauerTourStunden, Modell14$fitted.values),4)
 evaluation[evaluation$Model == "Modell15",]$sMAPE = round(smape(Modell15$model$dauerTourStunden, Modell15$fitted.values),4)
 evaluation[evaluation$Model == "Modell16",]$sMAPE = round(smape(Modell16$model$dauerTourStunden, Modell16$fitted.values),4)
 evaluation
-cat("Mit Modell12 wird weitergemacht, da Modell12 die besten Fehlerkennzahlen aufweist, aber nur knapp besser als Modell1")
-#BivariantenAufstellen2
-Modell124 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre + weekdayEndNumber, data = tripsAgg_Raw_Training)
-summary(Modell124)
-Modell125 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre + extremeHitze, data = tripsAgg_Raw_Training)
-summary(Modell125)
-Modell126 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre + wspd, data = tripsAgg_Raw_Training)
-summary(Modell126)
+cat("Mit Modell13 wird weitergemacht, da Modell13 die besten Fehlerkennzahlen aufweist, aber nur knapp besser als Modell1")
+# BivariantenAufstellen2
+Modell132 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + SchleusenSperre, data = tripsAgg_Raw_Training)
+summary(Modell132)
+Modell134 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + Orkan, data = tripsAgg_Raw_Training)
+summary(Modell134)
+Modell135 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + weekdayEndNumber, data = tripsAgg_Raw_Training)
+summary(Modell135)
+Modell136 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg, data = tripsAgg_Raw_Training)
+summary(Modell136)
 cat("Alle Werte sind Signifikant")
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("Modell124", "Modell125","Modell126"),
+evaluation = rbind(evaluation, data.frame(Model = c("Modell132","Modell134", "Modell135","Modell136"),
+                                        MAE = numeric(4),
+                                        sMAPE = numeric(4)))
+# MAE berechnen
+evaluation[evaluation$Model == "Modell132",]$MAE = round(mean(abs(Modell132$residuals)),4)
+evaluation[evaluation$Model == "Modell134",]$MAE = round(mean(abs(Modell134$residuals)),4)
+evaluation[evaluation$Model == "Modell135",]$MAE = round(mean(abs(Modell135$residuals)),4)
+evaluation[evaluation$Model == "Modell136",]$MAE = round(mean(abs(Modell136$residuals)),4)
+# sMAPE berechnen
+evaluation[evaluation$Model == "Modell132",]$sMAPE = round(smape(Modell132$model$dauerTourStunden, Modell132$fitted.values),4)
+evaluation[evaluation$Model == "Modell134",]$sMAPE = round(smape(Modell134$model$dauerTourStunden, Modell134$fitted.values),4)
+evaluation[evaluation$Model == "Modell135",]$sMAPE = round(smape(Modell135$model$dauerTourStunden, Modell135$fitted.values),4)
+evaluation[evaluation$Model == "Modell136",]$sMAPE = round(smape(Modell136$model$dauerTourStunden, Modell136$fitted.values),4)
+evaluation
+cat("Mit Modell136 wird weitergemacht, da Modell136 den besten sMAPE aufweist.")
+# BivariantenAufstellen3
+Modell1362 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + SchleusenSperre, data = tripsAgg_Raw_Training)
+summary(Modell1362)
+Modell1364 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + Orkan, data = tripsAgg_Raw_Training)
+summary(Modell1364)
+Modell1365 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + weekdayEndNumber, data = tripsAgg_Raw_Training)
+summary(Modell1365)
+cat("Alle Werte sind Signifikant")
+# Data Frame erweitern
+evaluation = rbind(evaluation, data.frame(Model = c("Modell1362", "Modell1364","Modell1365"),
                                         MAE = numeric(3),
                                         sMAPE = numeric(3)))
 # MAE berechnen
-evaluation[evaluation$Model == "Modell124",]$MAE = round(mean(abs(Modell124$residuals)),4)
-evaluation[evaluation$Model == "Modell125",]$MAE = round(mean(abs(Modell125$residuals)),4)
-evaluation[evaluation$Model == "Modell126",]$MAE = round(mean(abs(Modell126$residuals)),4)
+evaluation[evaluation$Model == "Modell1362",]$MAE = round(mean(abs(Modell1362$residuals)),4)
+evaluation[evaluation$Model == "Modell1364",]$MAE = round(mean(abs(Modell1364$residuals)),4)
+evaluation[evaluation$Model == "Modell1365",]$MAE = round(mean(abs(Modell1365$residuals)),4)
 # sMAPE berechnen
-evaluation[evaluation$Model == "Modell124",]$sMAPE = round(smape(Modell124$model$dauerTourStunden, Modell124$fitted.values),4)
-evaluation[evaluation$Model == "Modell125",]$sMAPE = round(smape(Modell125$model$dauerTourStunden, Modell125$fitted.values),4)
-evaluation[evaluation$Model == "Modell126",]$sMAPE = round(smape(Modell126$model$dauerTourStunden, Modell126$fitted.values),4)
+evaluation[evaluation$Model == "Modell1362",]$sMAPE = round(smape(Modell1362$model$dauerTourStunden, Modell1362$fitted.values),4)
+evaluation[evaluation$Model == "Modell1364",]$sMAPE = round(smape(Modell1364$model$dauerTourStunden, Modell1364$fitted.values),4)
+evaluation[evaluation$Model == "Modell1365",]$sMAPE = round(smape(Modell1365$model$dauerTourStunden, Modell1365$fitted.values),4)
 evaluation
-cat("Mit Modell126 wird weitergemacht, da Modell123 die besten Fehlerkennzahlen aufweist, aber nur knapp besser als Modell1 und Modell12")
-#BivariantenAufstellen3
-Modell1264 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre  + wspd + weekdayEndNumber, data = tripsAgg_Raw_Training)
-summary(Modell1234)
-Modell1265 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre  + wspd + extremeHitze, data = tripsAgg_Raw_Training)
-summary(Modell1235)
+cat("Mit Modell1362 wird weitergemacht, da Modell1362 die besten Werte aufweist.")
+# BivariantenAufstellen4
+Modell13624 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + SchleusenSperre + Orkan, data = tripsAgg_Raw_Training)
+summary(Modell13624)
+Modell13625 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + SchleusenSperre + weekdayEndNumber, data = tripsAgg_Raw_Training)
+summary(Modell13625)
 cat("Alle Werte sind Signifikant")
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("Modell1264", "Modell1265"),
+evaluation = rbind(evaluation, data.frame(Model = c("Modell13624", "Modell13625"),
                                         MAE = numeric(2),
                                         sMAPE = numeric(2)))
 # MAE berechnen
-evaluation[evaluation$Model == "Modell1264",]$MAE = round(mean(abs(Modell124$residuals)),4)
-evaluation[evaluation$Model == "Modell1265",]$MAE = round(mean(abs(Modell125$residuals)),4)
-
+evaluation[evaluation$Model == "Modell13624",]$MAE = round(mean(abs(Modell13624$residuals)),4)
+evaluation[evaluation$Model == "Modell13625",]$MAE = round(mean(abs(Modell13625$residuals)),4)
 # sMAPE berechnen
-evaluation[evaluation$Model == "Modell1264",]$sMAPE = round(smape(Modell1234$model$dauerTourStunden, Modell1234$fitted.values),4)
-evaluation[evaluation$Model == "Modell1265",]$sMAPE = round(smape(Modell1235$model$dauerTourStunden, Modell1235$fitted.values),4)
+evaluation[evaluation$Model == "Modell13624",]$sMAPE = round(smape(Modell13624$model$dauerTourStunden, Modell13624$fitted.values),4)
+evaluation[evaluation$Model == "Modell13625",]$sMAPE = round(smape(Modell13625$model$dauerTourStunden, Modell13625$fitted.values),4)
 evaluation
-cat("Die MAE Kennzahlen sind beide schlechter, aber der sMape Wert ist besser, daher wird dennoch weitergemacht.")
-
-#BivariantenAufstellen5
-Modell12645 = lm(dauerTourStunden ~ FerienHaufigkeit + SchleusenSperre + extremeHitze + weekdayEndNumber  + wspd, data = tripsAgg_Raw_Training)
-summary(Modell12645)
+cat("Mit Modell13624 wird weitergemacht, da Modell13624 den besten MAE und sMAPE Wert aufweist.")
+# BivariantenAufstellen5
+Modell136245 = lm(dauerTourStunden ~ FerienHaufigkeit + Jahreszeit + tavg + SchleusenSperre + Orkan + weekdayEndNumber, data = tripsAgg_Raw_Training)
+summary(Modell136245)
 cat("Alle Werte sind Signifikant")
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("Modell12645"),
+evaluation = rbind(evaluation, data.frame(Model = c("Modell136245"),
                                         MAE = numeric(1),
                                         sMAPE = numeric(1)))
 # MAE berechnen
-evaluation[evaluation$Model == "Modell12645",]$MAE = round(mean(abs(Modell123645$residuals)),4)
+evaluation[evaluation$Model == "Modell136245",]$MAE = round(mean(abs(Modell136245$residuals)),4)
 # sMAPE berechnen
-evaluation[evaluation$Model == "Modell12645",]$sMAPE = round(smape(Modell123645$model$dauerTourStunden, Modell123645$fitted.values),4)
+evaluation[evaluation$Model == "Modell136245",]$sMAPE = round(smape(Modell136245$model$dauerTourStunden, Modell136245$fitted.values),4)
 evaluation
-cat("Modell12645 ist sozusagen der Gewinner! Also die Variablen: FerienHaufigkeit + SchleusenSperre + weekdayEndNumber + windspeed + extreme Hitze ")
+cat("Modell136245 weißt sowohl beim MAE und sMAPE einen schlechteren Wert als Modell13624 auf, daher wird hier aufgehört.")
+cat("Modell13624 ist somit der Gewinner! Also die Variablen: FerienHaufigkeit + Jahreszeit + tavg + SchleusenSperre + Orkan")
 # Daten Testen
 # Testen mit dem anderen Set (Test) 
 # Vorhersage erzeugen
-prediction = predict(Modell12645, tripsAgg_Raw_Test)
+prediction = predict(Modell13624, tripsAgg_Raw_Test)
+prediction
 # Data Frame erweitern
-evaluation = rbind(evaluation, data.frame(Model = c("TestModell12645"),
+evaluation = rbind(evaluation, data.frame(Model = c("TestModell13624"),
                                           MAE = numeric(1),
                                          sMAPE = numeric(1)))
 # MAE berechnen
-evaluation[evaluation$Model == "TestModell12645",]$MAE = round(mae(tripsAgg_Raw_Test$dauerTourStunden,prediction),4)
+evaluation[evaluation$Model == "TestModell13624",]$MAE = round(mae(tripsAgg_Raw_Test$dauerTourStunden,prediction),4)
 # sMAPE berechnen
-evaluation[evaluation$Model == "TestModell12645",]$sMAPE =  round(smape(tripsAgg_Raw_Test$dauerTourStunden, prediction),4)
+evaluation[evaluation$Model == "TestModell13624",]$sMAPE =  round(smape(tripsAgg_Raw_Test$dauerTourStunden, prediction),4)
 # Fehler anzeigen
 evaluation
-cat("Die Fehlerkennzahlen haben sich nicht verschlechtert, der Seed ist einen Tick besser als unser bestes Modell, daher scheint kein Overfitting vorzuliegen. Es scheint also alles zu passen")
+evaluation2 = data.frame(evaluation[c(1,20,23),])
+evaluation2
+cat("Die Fehlerkennzahlen haben sich nicht verschlechtert, der Seed ist besser als unser bestes Modell, daher scheint kein Overfitting vorzuliegen.")
 cat("Unser bestes Modell ist gegenüber der Baseline deutlich verbessert!")
+```
+
+# Vorhersage
+```{r}
+# Dauer der Fahrten für jede Fahrt abgeschätzt
+prediction2019 <- predict(Modell13624, tripsAgg_Raw, interval = "confidence", level = 0.99)
+prediction2019 <- data.frame(prediction2019)
+accurateTrips <-cbind(tripsAgg_Raw[, c(1, 3, 4)], prediction2019)
+accurateTrips$timestampETAlwr = accurateTrips$timeStart + (accurateTrips$lwr*60*60)
+accurateTrips$timestampETAfit = accurateTrips$timeStart + (accurateTrips$fit*60*60)
+accurateTrips$timestampETAupr = accurateTrips$timeStart + (accurateTrips$upr*60*60)
+accurateTrips
 ```
