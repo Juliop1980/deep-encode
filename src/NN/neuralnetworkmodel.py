@@ -23,4 +23,6 @@ for i in range(N):
 #number_of_rows = len(index)
 #print(number_of_rows)
 
-print(df.info)
+#print(df.info())
+
+print(df.corr())
