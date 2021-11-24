@@ -1,7 +1,7 @@
 ---
 title: "Advanced Web Technologies"
 author: "Ruhan, Julio, Vinzenz"
-date: "03 11 21"
+date: "24 11 21"
 output: pdf_document
 ---
 
@@ -27,6 +27,14 @@ daten = read.csv2("pse_data.csv",sep=",")
 
 ```
 
+#CharIntoNum
+```{r}
+
+daten$s_scan_typeNumber = ifelse(daten$s_scan_type =="progressive",1,0)
+
+
+
+```
 
 #summaryData
 ```{r}
@@ -171,9 +179,30 @@ daten$e_ref_frame_count = as.numeric(daten$e_ref_frame_count)
 #int --> num
 daten$t_average_bitrate = as.numeric(daten$t_average_bitrate)
 
+
+#char --> num
+daten$s_scan_typeNumber = ifelse(daten$s_scan_type =="progressive",1,0)
+
+#char --> num
+daten$c_content_categoryNumber = ifelse(daten$c_content_category =="ballplayer",1,ifelse(daten$c_content_category =="alp",2,ifelse(daten$c_content_category =="black widow",3,ifelse(daten$c_content_category =="breastplate",4,ifelse(daten$c_content_category =="bubble",5,ifelse(daten$c_content_category =="cliff",6,ifelse(daten$c_content_category =="comic book",7,ifelse(daten$c_content_category =="crutch",8,ifelse(daten$c_content_category =="dogsled",9,ifelse(daten$c_content_category =="fountain",10,ifelse(daten$c_content_category =="geyser",11,ifelse(daten$c_content_category =="grille",12,ifelse(daten$c_content_category =="lawn mower",13,ifelse(daten$c_content_category =="maypole",14,ifelse(daten$c_content_category =="parachute",15,ifelse(daten$c_content_category =="pier",16,ifelse(daten$c_content_category =="shopping cart",17,ifelse(daten$c_content_category =="ski",18,ifelse(daten$c_content_category =="spider web",19,ifelse(daten$c_content_category =="sports car",20,ifelse(daten$c_content_category =="spotlight",21,ifelse(daten$c_content_category =="swing",22,ifelse(daten$c_content_category =="tile roof",23,ifelse(daten$c_content_category =="trimaran",24,0))))))))))))))))))))))))
+
+#char --> num
+daten$e_codec_profileNumber = ifelse(daten$e_codec_profile =="high",2,ifelse(daten$e_codec_profile =="main",1,0))
+
+#char --> num
+daten$e_scan_typeNumber = ifelse(daten$e_scan_type =="progressive",1,ifelse(daten$e_scan_type =="interlaced",2,0))
+
+
+#char --> num
+daten$e_pixel_fmtNumber = ifelse(daten$e_pixel_fmt =="yuv420p",1,0)
+
+
+
 str(daten)
 head(daten)
 summary(daten)
+
+
 
 
 ```
@@ -190,7 +219,7 @@ summary(daten)
 
 #Correlation of all Variables toward VMAF
 
-korrelation = data.frame(round(cor(daten[,c("s_width","s_height","s_storage_size","s_duration","c_si","c_ti","c_scene_change_ffmpeg_ratio30","c_scene_change_ffmpeg_ratio60","c_scene_change_ffmpeg_ratio90","c_scene_change_py_thresh30","c_scene_change_py_thresh50","c_colorhistogram_mean_dark","c_colorhistogram_mean_medium_dark","c_colorhistogram_mean_medium_bright","c_colorhistogram_mean_bright","c_colorhistogram_std_dev_dark","c_colorhistogram_std_dev_medium_dark","c_colorhistogram_std_dev_medium_bright","c_colorhistogram_std_dev_bright","c_colorhistogram_temporal_mean_std_dev_dark","c_colorhistogram_temporal_mean_std_dev_medium_dark","c_colorhistogram_temporal_mean_std_dev_medium_bright","c_colorhistogram_temporal_mean_std_dev_bright","e_crf","e_width","e_height","e_codec_level","e_framerate","e_gop_size","e_b_frame_int","e_ref_frame_count","e_bit_depth","t_average_bitrate" )],daten$t_average_vmaf,use="complete.obs"),3))
+korrelation = data.frame(round(cor(daten[,c("s_width","s_height","s_storage_size","s_duration","c_si","c_ti","c_scene_change_ffmpeg_ratio30","c_scene_change_ffmpeg_ratio60","c_scene_change_ffmpeg_ratio90","c_scene_change_py_thresh30","c_scene_change_py_thresh50","c_colorhistogram_mean_dark","c_colorhistogram_mean_medium_dark","c_colorhistogram_mean_medium_bright","c_colorhistogram_mean_bright","c_colorhistogram_std_dev_dark","c_colorhistogram_std_dev_medium_dark","c_colorhistogram_std_dev_medium_bright","c_colorhistogram_std_dev_bright","c_colorhistogram_temporal_mean_std_dev_dark","c_colorhistogram_temporal_mean_std_dev_medium_dark","c_colorhistogram_temporal_mean_std_dev_medium_bright","c_colorhistogram_temporal_mean_std_dev_bright","e_crf","e_width","e_height","e_codec_level","e_framerate","e_gop_size","e_b_frame_int","e_ref_frame_count","e_bit_depth","t_average_bitrate","s_scan_typeNumber","c_content_categoryNumber","e_codec_profileNumber","e_scan_typeNumber")],daten$t_average_vmaf,use="complete.obs"),3))
 colnames(korrelation)= c("Korrelation")
 
 korrelation
