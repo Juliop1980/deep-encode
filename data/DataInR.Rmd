@@ -6,6 +6,7 @@ output: pdf_document
 ---
 
 
+#LoadPackages
 ```{r}
 library("dummies")
 library("ggplot2")
@@ -19,7 +20,7 @@ library("datetime")
 library("fpc")
 ```
 
-
+#DataLoad
 ```{r}
 
 daten = read.csv2("pse_data.csv",sep=",")
@@ -27,30 +28,176 @@ daten = read.csv2("pse_data.csv",sep=",")
 ```
 
 
+#summaryData
+```{r}
+
+summary(daten)
+str(daten)
+head(daten)
+
+
+
+```
+
 #DataClearing
 ```{r}
+#chr --> num 
+daten$c_si = as.numeric(daten$c_si)
 
+#chr --> num 
+daten$c_ti = as.numeric(daten$c_ti)
+
+#chr --> num 
+daten$c_scene_change_ffmpeg_ratio30 = as.numeric(daten$c_scene_change_ffmpeg_ratio30)
+
+#chr --> num 
+daten$c_scene_change_ffmpeg_ratio60 = as.numeric(daten$c_scene_change_ffmpeg_ratio60)
+
+#chr --> num 
+daten$c_scene_change_ffmpeg_ratio90 = as.numeric(daten$c_scene_change_ffmpeg_ratio90)
+
+#chr --> num 
+daten$c_colorhistogram_mean_dark = as.numeric(daten$c_colorhistogram_mean_dark)
+
+#chr --> num 
+daten$c_colorhistogram_mean_medium_dark = as.numeric(daten$c_colorhistogram_mean_medium_dark)
+
+#chr --> num 
+daten$c_colorhistogram_mean_medium_bright = as.numeric(daten$c_colorhistogram_mean_medium_bright)
+
+#chr --> num 
+daten$c_colorhistogram_mean_bright = as.numeric(daten$c_colorhistogram_mean_bright)
+
+#chr --> num 
+daten$c_colorhistogram_std_dev_medium_dark = as.numeric(daten$c_colorhistogram_std_dev_medium_dark)
+
+#chr --> num 
+daten$c_colorhistogram_std_dev_dark = as.numeric(daten$c_colorhistogram_std_dev_dark)
+
+#chr --> num 
+daten$c_colorhistogram_std_dev_medium_bright = as.numeric(daten$c_colorhistogram_std_dev_medium_bright)
+
+#chr --> num 
+daten$c_colorhistogram_std_dev_bright = as.numeric(daten$c_colorhistogram_std_dev_bright)
+
+#chr --> num 
+daten$c_colorhistogram_temporal_mean_std_dev_dark = as.numeric(daten$c_colorhistogram_temporal_mean_std_dev_dark)
+
+#chr --> num 
+daten$c_colorhistogram_temporal_mean_std_dev_medium_dark = as.numeric(daten$c_colorhistogram_temporal_mean_std_dev_medium_dark)
+
+#chr --> num 
+daten$c_colorhistogram_temporal_mean_std_dev_medium_bright = as.numeric(daten$c_colorhistogram_temporal_mean_std_dev_medium_bright)
+
+#chr --> num 
+daten$c_colorhistogram_temporal_mean_std_dev_bright = as.numeric(daten$c_colorhistogram_temporal_mean_std_dev_bright)
+
+#chr --> num
+daten$t_average_vmaf = as.numeric(daten$t_average_vmaf)
+
+#chr --> num 
+daten$e_framerate = as.numeric(daten$e_framerate)
+
+#chr --> num 
+daten$e_gop_size = as.numeric(daten$e_gop_size)
+
+#chr --> num 
+daten$e_bit_depth = as.numeric(daten$e_bit_depth)
+
+#int --> factor 
+daten$ï..s_video_id = as.factor(daten$ï..s_video_id)
+
+#char --> factor 
+daten$e_aspect_ratio = as.factor(daten$e_aspect_ratio)
+
+#char --> factor 
+daten$e_pixel_aspect_ratio = as.factor(daten$e_pixel_aspect_ratio)
+
+#char --> factor 
+daten$s_scan_type = as.factor(daten$s_scan_type)
+
+#char --> factor 
+daten$c_content_category = as.factor(daten$c_content_category)
+
+#char --> factor 
+daten$e_codec = as.factor(daten$e_codec)
+
+#char --> factor 
+daten$e_codec_profile = as.factor(daten$e_codec_profile)
+
+#char --> factor 
+daten$e_scan_type = as.factor(daten$e_scan_type)
+
+#char --> factor 
+daten$e_pixel_fmt = as.factor(daten$e_pixel_fmt)
+
+
+#int --> num
+daten$s_width = as.numeric(daten$s_width)
+
+#int --> num
+daten$s_height = as.numeric(daten$s_height)
+
+#int --> num
+daten$s_storage_size = as.numeric(daten$s_storage_size)
+
+#int --> num
+daten$s_duration = as.numeric(daten$s_duration)
+
+#int --> num
+daten$c_scene_change_py_thresh30 = as.numeric(daten$c_scene_change_py_thresh30)
+
+#int --> num
+daten$c_scene_change_py_thresh50 = as.numeric(daten$c_scene_change_py_thresh50)
+
+#int --> num
+daten$e_crf = as.numeric(daten$e_crf)
+
+#int --> num
+daten$e_width = as.numeric(daten$e_width)
+
+#int --> num
+daten$e_height = as.numeric(daten$e_height)
+
+#int --> num
+daten$e_codec_level = as.numeric(daten$e_codec_level)
+
+#int --> num
+daten$e_b_frame_int = as.numeric(daten$e_b_frame_int)
+
+#int --> num
+daten$e_ref_frame_count = as.numeric(daten$e_ref_frame_count)
+
+#int --> num
+daten$t_average_bitrate = as.numeric(daten$t_average_bitrate)
+
+str(daten)
+head(daten)
+summary(daten)
 
 
 ```
 
+#DataVisualization
 ```{r}
 
 
 
 ```
 
-
+#CorrelationTowardsVMAF
 ```{r}
 
+#Correlation of all Variables toward VMAF
 
+korrelation = data.frame(round(cor(daten[,c("s_width","s_height","s_storage_size","s_duration","c_si","c_ti","c_scene_change_ffmpeg_ratio30","c_scene_change_ffmpeg_ratio60","c_scene_change_ffmpeg_ratio90","c_scene_change_py_thresh30","c_scene_change_py_thresh50","c_colorhistogram_mean_dark","c_colorhistogram_mean_medium_dark","c_colorhistogram_mean_medium_bright","c_colorhistogram_mean_bright","c_colorhistogram_std_dev_dark","c_colorhistogram_std_dev_medium_dark","c_colorhistogram_std_dev_medium_bright","c_colorhistogram_std_dev_bright","c_colorhistogram_temporal_mean_std_dev_dark","c_colorhistogram_temporal_mean_std_dev_medium_dark","c_colorhistogram_temporal_mean_std_dev_medium_bright","c_colorhistogram_temporal_mean_std_dev_bright","e_crf","e_width","e_height","e_codec_level","e_framerate","e_gop_size","e_b_frame_int","e_ref_frame_count","e_bit_depth","t_average_bitrate" )],daten$t_average_vmaf,use="complete.obs"),3))
+colnames(korrelation)= c("Korrelation")
 
-```
+korrelation
 
-
-```{r}
-
-
+#top10
+korrelationTop10 <- head(korrelation %>% arrange(desc(abs(korrelation$Korrelation))),10)
+korrelationTop10
 
 ```
 
