@@ -1,4 +1,4 @@
-# AWT PJ WS 21/22 Deep Encode 2
+﻿# AWT PJ WS 21/22 Deep Encode 2
 
 Repository for training and evaluation of different machine learning models to reduce the number of test encodes needed to identify the optimal encoding settings.
 
@@ -12,7 +12,80 @@ Video streaming content differs in terms of complexity and requires title-specif
 
 ## Set up
 
+### Starting 🚀
+
+_
+These instructions will allow you to get a copy of the project running on your local machine for development and testing purposes_
+
+Look at **Deployment** to know how to deploy this project.
+
+
+### Requirements 📋
+
+_**Python 3.9.9**_
+```
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3
+```
+
+**virtualenv**
+
+_install virtual env with
+```
+pip install virtualenv
+```
+
+_create a directory to save virtual environments_
+```
+mkdir virtualenvs
+cd virtualenvs
+```
+
+_Set the environment_
+```
+virtualenv env
+```
+
+_To activate use_
+```
+source env/bin/activate
+```
+
+_To deactivate it use_
+```
+source env/bin/deactivate
+```
+
+### Installation 🔧
+
+_Follow these steps once done with the **Requirements**:_
+
+_**NOTE: Keep your virtual environment activated for the installation.**
+
+_clone the github repository_
+
+```
+git clone <repository_url>
+```
+
+_A requirements file was generated that will allow the automatic installation of the modules with_
+
+```
+pip install -r requirements.txt
+```
+
 ## Run
+
+### Important commands
+
+_to run the script_
+
+```
+python neuralnetworkmodel.py
+```
 
 ## Documentation
 
