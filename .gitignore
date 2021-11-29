@@ -1,6 +1,11 @@
 # ignore all .vs files and .vs folders
 .vs*
 
+
+# Ignore virtual environments
+
+virtualenvs/
+
 # Created by https://www.toptal.com/developers/gitignore/api/r
 # Edit at https://www.toptal.com/developers/gitignore?templates=r
 
