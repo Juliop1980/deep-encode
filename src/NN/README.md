@@ -22,6 +22,14 @@ Look at **Deployment** to know how to deploy this project.
 
 ### Requirements 📋
 
+_**Git**_
+
+```
+sudo apt update
+sudo apt install git
+```
+
+
 _**Python 3.9.9**_
 ```
 sudo apt update
@@ -33,7 +41,7 @@ sudo apt install python3
 
 **virtualenv**
 
-_install virtual env with
+_install virtual env with_
 ```
 pip install virtualenv
 ```
@@ -65,11 +73,21 @@ _Follow these steps once done with the **Requirements**:_
 
 _**NOTE: Keep your virtual environment activated for the installation.**
 
+
 _clone the github repository_
 
 ```
-git clone <repository_url>
+git clone https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
 ```
+
+_enter repository_
+
+```
+cd awt-pj-ws21-22-deepencode-2\src\NN
+```
+
+
+
 
 _A requirements file was generated that will allow the automatic installation of the modules with_
 
