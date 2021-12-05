@@ -85,3 +85,14 @@ test_labels_numpy = test_labels.to_numpy()
 #print(train_labels.iloc[0:10])
 #print(test_labels.iloc[0:10])
 #train.to_csv('train_data.csv',index=False)
+#print(train_data_numpy.shape)
+#print(train_data_numpy[0])
+sample_size = train_data_numpy.shape[0]
+time_steps = train_data_numpy.shape[1]
+input_dimension =1
+train_data_reshaped = train_data_numpy.reshape(sample_size,time_steps,input_dimension)
+#print(time_steps)
+
+print("After reshape train data set shape:\n", train_data_reshaped.shape)
+print("1 Sample shape:\n",train_data_reshaped[0].shape)
+print("An example sample:\n", train_data_reshaped[0])
