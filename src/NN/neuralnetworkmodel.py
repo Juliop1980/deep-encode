@@ -71,10 +71,10 @@ train_data = (train_data - mean) / std
 test_data = (test_data - mean) /std
 train_labels =  train.iloc[: , -1]
 test_labels = test.iloc[: , -1]
-train_data.to_csv('train_data.csv',index=False)
-test_data.to_csv('test_data.csv',index=False)
-train_labels.to_csv('train_labels.csv',index=False)
-test_labels.to_csv('test_labels.csv',index=False)
+#train_data.to_csv('train_data.csv',index=False)
+#test_data.to_csv('test_data.csv',index=False)
+#train_labels.to_csv('train_labels.csv',index=False)
+#test_labels.to_csv('test_labels.csv',index=False)
 #print(train_data.iloc[0])
 #print(test_data.iloc[0])
 #print(train_labels.iloc[0:10])
