@@ -54,12 +54,29 @@ correlations_with_vmaf = correlations_with_vmaf.iloc[1:9]
 #print(correlations_with_vmaf)
 
 df1 = df[['e_crf','t_average_bitrate','e_height','e_width','e_scan_type','e_codec_level','e_codec_profile','c_si','t_average_vmaf']]
-print(df1)
+#print(df1)
 #train = train.iloc[: , 0:]
 train, test = train_test_split(df1, test_size=0.2)
+train_data = train.iloc[: , :-1]
+test_data= train.iloc[: , :-1]
 #train = train.iloc[: , 0:]
 #print(train)
 #test = test.iloc[: , 0:]
 #print(test)
-train.to_csv('train_data.csv',index=False)
-test.to_csv('test_data.csv',index=False)
+#train.to_csv('train_data.csv',index=False)
+#test.to_csv('test_data.csv',index=False)
+mean = train_data.mean(axis =0)
+std = train_data.std(axis=0)
+train_data = (train_data - mean) / std
+test_data = (test_data - mean) /std
+train_labels =  train.iloc[: , -1]
+test_labels = test.iloc[: , -1]
+train_data.to_csv('train_data.csv',index=False)
+test_data.to_csv('test_data.csv',index=False)
+train_labels.to_csv('train_labels.csv',index=False)
+test_labels.to_csv('test_labels.csv',index=False)
+#print(train_data.iloc[0])
+#print(test_data.iloc[0])
+#print(train_labels.iloc[0:10])
+#print(test_labels.iloc[0:10])
+#train.to_csv('train_data.csv',index=False)
