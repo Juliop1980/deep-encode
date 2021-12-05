@@ -13,10 +13,10 @@ df = pd.read_csv('../../data/pse_data.csv')
 
 #df.drop(df.tail(3).index,inplace=True) # drop last 3 rows
 
-#N = 3
-## Drop last N columns of dataframe
-#for i in range(N):
-#        del df[df.columns.values[-1]]
+N = 3
+#Drop last N columns of dataframe
+for i in range(N):
+        del df[df.columns.values[-1]]
 
 #print(df.isnull().sum())
 #index = df.index
@@ -31,13 +31,25 @@ df["s_scan_type"]=df["s_scan_type"].astype('category').cat.codes
 df["e_scan_type"]=df["e_scan_type"].astype('category').cat.codes
 df["e_pixel_fmt"]=df["e_pixel_fmt"].astype('category').cat.codes
 
+#df.drop(df.tail(4).index,inplace=True) # drop last 3 rows
 
 correlations = df.corr()
 #print(correlations)
-correlations_with_vmaf = correlations.iloc[: , -4]
+
+#correlations_with_target_resolution = correlations.iloc[: , -4]
+##print(correlations_with_vmaf)
+#correlations_with_vmaf = correlations_with_vmaf.abs()
+#correlations_with_vmaf = correlations_with_vmaf.sort_values(ascending=False)
+##print(correlations_with_vmaf)
+#correlations_with_vmaf.drop(correlations_with_vmaf.tail(9).index,inplace=True)
+#print(correlations_with_vmaf)
+
+
+correlations_with_vmaf = correlations.iloc[: , -1]
 #print(correlations_with_vmaf)
 correlations_with_vmaf = correlations_with_vmaf.abs()
 correlations_with_vmaf = correlations_with_vmaf.sort_values(ascending=False)
 #print(correlations_with_vmaf)
-correlations_with_vmaf.drop(correlations_with_vmaf.tail(9).index,inplace=True)
-print(correlations_with_vmaf)
+correlations_with_vmaf.drop(correlations_with_vmaf.tail(20).index,inplace=True)
+print(correlations_with_vmaf.iloc[1:9])
+#print(correlations_with_vmaf)
