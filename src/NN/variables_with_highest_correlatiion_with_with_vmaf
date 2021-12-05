@@ -1,9 +1,0 @@
-e_crf                0.838396
-t_average_bitrate    0.662227
-e_height             0.444841
-e_width              0.444841
-e_scan_type          0.349028
-e_codec_level        0.313535
-e_codec_profile      0.291613
-c_si                 0.051523
-Name: t_average_vmaf, dtype: float64
