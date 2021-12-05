@@ -54,7 +54,12 @@ correlations_with_vmaf = correlations_with_vmaf.iloc[1:9]
 #print(correlations_with_vmaf)
 
 df1 = df[['e_crf','t_average_bitrate','e_height','e_width','e_scan_type','e_codec_level','e_codec_profile','c_si','t_average_vmaf']]
-#print(df1)
-#train, test = train_test_split(df, test_size=0.2)
-#train.to_csv('train_data.csv')
-#test.to_csv('test_data.csv')
+print(df1)
+#train = train.iloc[: , 0:]
+train, test = train_test_split(df1, test_size=0.2)
+#train = train.iloc[: , 0:]
+#print(train)
+#test = test.iloc[: , 0:]
+#print(test)
+train.to_csv('train_data.csv',index=False)
+test.to_csv('test_data.csv',index=False)
