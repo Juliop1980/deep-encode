@@ -145,3 +145,9 @@ test_data_reshaped = test_data_numpy.reshape(test_data_numpy.shape[0],test_data_
 
 [loss, mae] = model_conv1D.evaluate(test_data_reshaped, test_labels_numpy, verbose=0)
 print("Testing set Mean Abs Error:" + str (mae))
+
+
+
+test_predictions = model_conv1D.predict(test_data_reshaped).flatten()
+
+
