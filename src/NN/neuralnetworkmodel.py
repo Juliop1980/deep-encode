@@ -6,6 +6,8 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from tensorflow import keras
 from tensorflow.keras import Model
+from plot_keras_history import show_history, plot_history
+import matplotlib.pyplot as plt
 #For jupyter notebook uncomment next line
 #%matplotlib inline
 
@@ -131,3 +133,11 @@ def build_conv1D_model():
 
 model_conv1D = build_conv1D_model()
 model_conv1D.summary()
+
+EPOCHS = 500
+history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS,
+                    validation_split=0.2, verbose=1)
+
+show_history(history)
+plot_history(history, path="standard.png")
+plt.close()
