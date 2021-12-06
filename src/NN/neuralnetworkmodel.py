@@ -4,6 +4,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+from tensorflow import keras
+from tensorflow.keras import Model
 #For jupyter notebook uncomment next line
 #%matplotlib inline
 
@@ -93,6 +95,39 @@ input_dimension =1
 train_data_reshaped = train_data_numpy.reshape(sample_size,time_steps,input_dimension)
 #print(time_steps)
 
-print("After reshape train data set shape:\n", train_data_reshaped.shape)
-print("1 Sample shape:\n",train_data_reshaped[0].shape)
-print("An example sample:\n", train_data_reshaped[0])
+#print("After reshape train data set shape:\n", train_data_reshaped.shape)
+#print("1 Sample shape:\n",train_data_reshaped[0].shape)
+#print("An example sample:\n", train_data_reshaped[0])
+
+def build_conv1D_model():
+
+  n_timesteps = train_data_reshaped.shape[1] #8
+  print(n_timesteps)
+  n_features  = train_data_reshaped.shape[2] #1
+
+  model = keras.Sequential(name="model_conv1D")
+
+  model.add(keras.layers.Input(shape=(n_timesteps,n_features)))
+
+  model.add(keras.layers.Conv1D(filters=64, kernel_size=4, activation='relu', name="Conv1D_1"))
+  model.add(keras.layers.Dropout(0.5))
+
+  model.add(keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', name="Conv1D_2"))
+
+  print("-------------------------------------------------------------")
+  
+  model.add(keras.layers.Conv1D(filters=16, kernel_size=2, activation='relu', name="Conv1D_3"))
+  
+  model.add(keras.layers.MaxPooling1D(pool_size=2, name="MaxPooling1D"))
+  model.add(keras.layers.Flatten())
+  model.add(keras.layers.Dense(32, activation='relu', name="Dense_1"))
+  model.add(keras.layers.Dense(n_features, name="Dense_2"))
+
+
+  optimizer = tf.keras.optimizers.RMSprop(0.001)
+
+  model.compile(loss='mse',optimizer=optimizer,metrics=['mae'])
+  return model
+
+model_conv1D = build_conv1D_model()
+model_conv1D.summary()
