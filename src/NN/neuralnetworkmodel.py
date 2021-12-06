@@ -62,7 +62,7 @@ df1 = df[['e_crf','t_average_bitrate','e_height','e_width','e_scan_type','e_code
 #train = train.iloc[: , 0:]
 train, test = train_test_split(df1, test_size=0.2)
 train_data = train.iloc[: , :-1]
-test_data= train.iloc[: , :-1]
+test_data= test.iloc[: , :-1]
 #train = train.iloc[: , 0:]
 #print(train)
 #test = test.iloc[: , 0:]
@@ -135,9 +135,13 @@ model_conv1D = build_conv1D_model()
 model_conv1D.summary()
 
 EPOCHS = 500
-history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS,
-                    validation_split=0.2, verbose=1)
+history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
 
-show_history(history)
-plot_history(history, path="standard.png")
-plt.close()
+#show_history(history)
+#plot_history(history, path="standard.png")
+#plt.close()
+#print(len(test_data_numpy))
+test_data_reshaped = test_data_numpy.reshape(test_data_numpy.shape[0],test_data_numpy.shape[1],1)
+
+[loss, mae] = model_conv1D.evaluate(test_data_reshaped, test_labels_numpy, verbose=0)
+print("Testing set Mean Abs Error:" + str (mae))
