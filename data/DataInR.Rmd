@@ -665,7 +665,17 @@ cat("The test Model has a slightly worse MAE but an better sMAPE, therefore ther
 ```
 
 
+#Prediction
+```{r}
 
+predicitionVMAF <- predict(Modell137564, daten, interval = "confidence", level = 0.99)
+predicitionVMAF <- data.frame(predicitionVMAF)
+
+acurateVMAF <- cbind(daten[,c(1,43)],predicitionVMAF)
+acurateVMAF
+
+
+```
 
 
 
