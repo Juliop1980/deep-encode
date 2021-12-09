@@ -8,6 +8,8 @@ from tensorflow import keras
 from tensorflow.keras import Model
 from plot_keras_history import show_history, plot_history
 import matplotlib.pyplot as plt
+import statistics
+from numpy import sqrt 
 #For jupyter notebook uncomment next line
 #%matplotlib inline
 
@@ -172,19 +174,52 @@ test_predictions = [100 if i >100 else i for i in test_predictions]
 df = df[['t_average_bitrate','e_height']]
 df["t_average_vmaf_predicted"] = test_predictions
 
-df.to_csv('data_with_predictions.csv', index=False)
+#df.to_csv('data_with_predictions.csv', index=False)
 
-#repeats = 5
-#scores = list()
-#for i in repeats:
-#	run_scores = list()
-#	for j in k:
-#		#train, test = train_test_split(df1, test_size=0.2)
-#		train, test = split_old(df1, j)
-#		model = fit(train.X, train.y)
-#		predictions = model.predict(test.X)
-#		skill = compare(test.y, predictions)
-#		run_scores.append(skill)
-#	scores.append(mean(run_scores))
+repeats = 2
+scores = list()
+for i in range(repeats):
+	#train, test = train_test_split(df1, test_size=0.2)
+	train, test = train_test_split(df1, test_size=0.2)
+	train_data = train.iloc[: , :-1]
+	test_data= test.iloc[: , :-1]
+	mean = train_data.mean(axis =0)
+	std = train_data.std(axis=0)
+	train_data = (train_data - mean) / std
+	test_data = (test_data - mean) /std
+	train_labels =  train.iloc[: , -1]
+	test_labels = test.iloc[: , -1]
+	train_data_numpy = train_data.to_numpy()
+	test_data_numpy = test_data.to_numpy()
+	train_labels_numpy = train_labels.to_numpy()
+	test_labels_numpy = test_labels.to_numpy()
+	sample_size = train_data_numpy.shape[0]
+	time_steps = train_data_numpy.shape[1]
+	input_dimension =1
+	train_data_reshaped = train_data_numpy.reshape(sample_size,time_steps,input_dimension)
+	#model = fit(train.X, train.y)
+	EPOCHS = 500
+	history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
+	test_data_reshaped = test_data_numpy.reshape(test_data_numpy.shape[0],test_data_numpy.shape[1],1)
+
+	[loss, mae] = model_conv1D.evaluate(test_data_reshaped, test_labels_numpy, verbose=0)
+	skill = mae
+	scores.append(skill)
+
+mean_skill = statistics.mean(scores)
+print(mean_skill)
+
+standard_deviation = sqrt(1/len(scores) * sum( (score - mean_skill)^2 ))
+standard_error = standard_deviation / sqrt(count(scores))
+
+interval = standard_error * 1.96
+lower_interval = mean_skill - interval
+upper_interval = mean_skill + interval
+
+
+
+print(standard_error)
+print(lower_interval)
+print(upper_interval)
 
 
