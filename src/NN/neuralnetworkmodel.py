@@ -150,4 +150,41 @@ print("Testing set Mean Abs Error:" + str (mae))
 
 test_predictions = model_conv1D.predict(test_data_reshaped).flatten()
 
+#get new dataset with predictions
+new_data = df1.iloc[: , :-1]
+print(new_data)
+mean = new_data.mean(axis =0)
+std = new_data.std(axis=0)
+new_data = (new_data - mean) / std
+new_data_labels =  df1.iloc[: , -1]
+
+new_data_numpy = new_data.to_numpy()
+new_data_labels_numpy =  new_data_labels.to_numpy()
+
+new_data_reshaped = new_data_numpy.reshape(new_data_numpy.shape[0],new_data_numpy.shape[1],1)
+
+[loss, mae] = model_conv1D.evaluate(new_data_reshaped, new_data_labels_numpy, verbose=0)
+print("Testing set Mean Abs Error:" + str (mae))
+test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
+#print(test_predictions)
+test_predictions = [100 if i >100 else i for i in test_predictions]
+
+df = df[['t_average_bitrate','e_height']]
+df["t_average_vmaf_predicted"] = test_predictions
+
+df.to_csv('data_with_predictions.csv', index=False)
+
+#repeats = 5
+#scores = list()
+#for i in repeats:
+#	run_scores = list()
+#	for j in k:
+#		#train, test = train_test_split(df1, test_size=0.2)
+#		train, test = split_old(df1, j)
+#		model = fit(train.X, train.y)
+#		predictions = model.predict(test.X)
+#		skill = compare(test.y, predictions)
+#		run_scores.append(skill)
+#	scores.append(mean(run_scores))
+
 
