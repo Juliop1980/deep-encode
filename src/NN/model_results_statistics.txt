@@ -1,0 +1,5 @@
+number of tests =  200
+mean :2.969299849271774
+standard_error :0.01193681736466972
+lower_interval :2.9573630319071045
+upper_interval :2.9573630319071045
