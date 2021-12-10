@@ -10,6 +10,7 @@ from plot_keras_history import show_history, plot_history
 import matplotlib.pyplot as plt
 import statistics
 from numpy import sqrt 
+from scipy.stats import sem
 #For jupyter notebook uncomment next line
 #%matplotlib inline
 
@@ -106,7 +107,7 @@ train_data_reshaped = train_data_numpy.reshape(sample_size,time_steps,input_dime
 def build_conv1D_model():
 
   n_timesteps = train_data_reshaped.shape[1] #8
-  print(n_timesteps)
+  #print(n_timesteps)
   n_features  = train_data_reshaped.shape[2] #1
 
   model = keras.Sequential(name="model_conv1D")
@@ -118,7 +119,7 @@ def build_conv1D_model():
 
   model.add(keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', name="Conv1D_2"))
 
-  print("-------------------------------------------------------------")
+  #print("-------------------------------------------------------------")
   
   model.add(keras.layers.Conv1D(filters=16, kernel_size=2, activation='relu', name="Conv1D_3"))
   
@@ -136,47 +137,47 @@ def build_conv1D_model():
 model_conv1D = build_conv1D_model()
 model_conv1D.summary()
 
-EPOCHS = 500
-history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
+#EPOCHS = 500
+#history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
 
-#show_history(history)
-#plot_history(history, path="standard.png")
-#plt.close()
-#print(len(test_data_numpy))
-test_data_reshaped = test_data_numpy.reshape(test_data_numpy.shape[0],test_data_numpy.shape[1],1)
+##show_history(history)
+##plot_history(history, path="standard.png")
+##plt.close()
+##print(len(test_data_numpy))
+#test_data_reshaped = test_data_numpy.reshape(test_data_numpy.shape[0],test_data_numpy.shape[1],1)
 
-[loss, mae] = model_conv1D.evaluate(test_data_reshaped, test_labels_numpy, verbose=0)
-print("Testing set Mean Abs Error:" + str (mae))
+#[loss, mae] = model_conv1D.evaluate(test_data_reshaped, test_labels_numpy, verbose=0)
+##print("Testing set Mean Abs Error:" + str (mae))
 
 
 
-test_predictions = model_conv1D.predict(test_data_reshaped).flatten()
+#test_predictions = model_conv1D.predict(test_data_reshaped).flatten()
 
-#get new dataset with predictions
-new_data = df1.iloc[: , :-1]
-print(new_data)
-mean = new_data.mean(axis =0)
-std = new_data.std(axis=0)
-new_data = (new_data - mean) / std
-new_data_labels =  df1.iloc[: , -1]
+##get new dataset with predictions
+#new_data = df1.iloc[: , :-1]
+##print(new_data)
+#mean = new_data.mean(axis =0)
+#std = new_data.std(axis=0)
+#new_data = (new_data - mean) / std
+#new_data_labels =  df1.iloc[: , -1]
 
-new_data_numpy = new_data.to_numpy()
-new_data_labels_numpy =  new_data_labels.to_numpy()
+#new_data_numpy = new_data.to_numpy()
+#new_data_labels_numpy =  new_data_labels.to_numpy()
 
-new_data_reshaped = new_data_numpy.reshape(new_data_numpy.shape[0],new_data_numpy.shape[1],1)
+#new_data_reshaped = new_data_numpy.reshape(new_data_numpy.shape[0],new_data_numpy.shape[1],1)
 
-[loss, mae] = model_conv1D.evaluate(new_data_reshaped, new_data_labels_numpy, verbose=0)
-print("Testing set Mean Abs Error:" + str (mae))
-test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
-#print(test_predictions)
-test_predictions = [100 if i >100 else i for i in test_predictions]
+#[loss, mae] = model_conv1D.evaluate(new_data_reshaped, new_data_labels_numpy, verbose=0)
+#print("Testing set Mean Abs Error:" + str (mae))
+#test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
+##print(test_predictions)
+#test_predictions = [100 if i >100 else i for i in test_predictions]
 
-df = df[['t_average_bitrate','e_height']]
-df["t_average_vmaf_predicted"] = test_predictions
+#df = df[['t_average_bitrate','e_height']]
+#df["t_average_vmaf_predicted"] = test_predictions
 
 #df.to_csv('data_with_predictions.csv', index=False)
 
-repeats = 2
+repeats = 200
 scores = list()
 for i in range(repeats):
 	#train, test = train_test_split(df1, test_size=0.2)
@@ -207,19 +208,21 @@ for i in range(repeats):
 	scores.append(skill)
 
 mean_skill = statistics.mean(scores)
-print(mean_skill)
+print("number of tests =  200")
+print("mean :" + str(mean_skill))
 
-standard_deviation = sqrt(1/len(scores) * sum( (score - mean_skill)^2 ))
-standard_error = standard_deviation / sqrt(count(scores))
+#standard_deviation = sqrt(1/len(scores) * sum( (score - mean_skill)^2 ))
+standard_error = sem(scores)
 
-interval = standard_error * 1.96
-lower_interval = mean_skill - interval
-upper_interval = mean_skill + interval
+#interval = standard_error * 1.96
+lower_interval = mean_skill - standard_error
+upper_interval = mean_skill + standard_error
 
 
-
-print(standard_error)
-print(lower_interval)
-print(upper_interval)
+print("standard_error :" + str(standard_error))
+print("lower_interval :" + str(lower_interval))
+print("upper_interval :" + str(lower_interval))
+#print(lower_interval)
+#print(upper_interval)
 
 
