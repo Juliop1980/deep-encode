@@ -2,6 +2,9 @@ import os
 import collections
 import matplotlib.pyplot as plt
 
+
+colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",1080:"#7db6e9"}
+
 def create_directory(directory_name):
     current_directory = os.getcwd()
     final_directory = os.path.join(current_directory, directory_name)
@@ -47,7 +50,17 @@ def start_graph_with_max_bitrate_for_video(data_for_video_in_lists):
     graph = start_graph(max_bitrate, 100)
     return graph
 
+def get_resolution_height(lists_with_resolution):
+    first_list_with_resolution = lists_with_resolution[0]
+    resolution_height = first_list_with_resolution[1]
+    return resolution_height
+
+def get_color_for_resolution(resolution_height):
+    color_hexadecimal = colors_for_resolutions[resolution_height]
+    return color_hexadecimal
+
 prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
+prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 
 #start_graph(7000,100).show()
 #dict = data_dictionary_by_resolution(prueba)
@@ -57,4 +70,5 @@ prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
 #print(data_dictionary_by_resolution(prueba))
 #create_directory("prueba")
 #print(order_by_resolution(prueba))
-print(get_max_bitrate(prueba))
+#start_graph_with_max_bitrate_for_video(prueba).show()
+print(get_resolution_height(prueba2))
