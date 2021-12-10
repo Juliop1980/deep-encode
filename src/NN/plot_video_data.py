@@ -1,9 +1,11 @@
 import os
 import collections
 import matplotlib.pyplot as plt
+from scipy.interpolate import make_interp_spline, BSpline
+import numpy as np
 
 
-colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",1080:"#7db6e9"}
+colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",540:"#f1a062",720:"#424346",1080:"#7db6e9"}
 
 def create_directory(directory_name):
     current_directory = os.getcwd()
@@ -59,9 +61,49 @@ def get_color_for_resolution(resolution_height):
     color_hexadecimal = colors_for_resolutions[resolution_height]
     return color_hexadecimal
 
+def get_bitrate(datos):
+    bitrate = datos[0]
+    return bitrate
+
+def get_vmaf(datos):
+    vmaf = datos[2]
+    return vmaf
+
+#def get_all_points_with_label(resolution_height,graph):
+
+
+def smooth_resolution_graph(resolution_height,graph):
+    xnew = np.linspace(T.min(), T.max(), 300) 
+    spl = make_interp_spline(T, power, k=3)  # type: BSpline
+    power_smooth = spl(xnew)
+    graph.plot(xnew, power_smooth)
+    return graph
+
 prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
 prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 
+# line 1 points
+x1 = [1,2,3]
+y1 = [2,4,1]
+# plotting the line 1 points
+plt.plot(x1, y1, label = "line 1")
+ 
+# line 2 points
+x2 = [1,2,3]
+y2 = [4,1,3]
+# plotting the line 2 points
+plt.plot(x2, y2, label = "line 2")
+ 
+# naming the x axis
+plt.xlabel('x - axis')
+# naming the y axis
+plt.ylabel('y - axis')
+# giving a title to my graph
+plt.title('Two lines on same graph!')
+ 
+# show a legend on the plot
+plt.legend()
+ 
 #start_graph(7000,100).show()
 #dict = data_dictionary_by_resolution(prueba)
 #ord_dict = order_dict_by_key(dict)
@@ -71,4 +113,12 @@ prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 #create_directory("prueba")
 #print(order_by_resolution(prueba))
 #start_graph_with_max_bitrate_for_video(prueba).show()
-print(get_resolution_height(prueba2))
+#print(get_resolution_height(prueba2))
+#print(get_color_for_resolution(432))
+#datos = [72000,1080,33]
+#print(get_vmaf(datos))
+#smooth_resolution_graph(100,plt).show()
+
+
+
+
