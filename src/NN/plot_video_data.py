@@ -95,7 +95,13 @@ def get_vmaf(datos):
 
 
 def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,graph):
-    xnew = np.linspace(min(x_points_list), max(x_points_list), 300) 
+    xnew = np.linspace(min(x_points_list), max(x_points_list), 300)
+    merged_list = list(map(lambda x, y:(x,y), x_points_list, y_points_list))
+    merged_list=list(set( merged_list))
+    merged_list=sorted(merged_list, key=lambda x: x[0])
+    lists = list(map(list, zip(*merged_list)))
+    x_points_list=lists[0]
+    y_points_list=lists[1]
     spl = make_interp_spline(x_points_list, y_points_list, k=3)  # type: BSpline
     power_smooth = spl(xnew)
     label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(int(resolution_height))
@@ -218,17 +224,14 @@ for i in s_video_ids:
             #print(vmaf)
             vmaf_list.append(vmaf)
 
-        bitrate_list.sort()
-        vmaf_list.sort()
-        bitrate_list[0] -= 0.0000001
-        bitrate_list[-2] += 0.0000001 
+
         graph = plot_smooth_resolution_graph(bitrate_list,vmaf_list,resolution_height,graph)
 
     graph.show()
 
     
     #graph.show()
-    break
+    #break
 
 
 
