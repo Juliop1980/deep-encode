@@ -98,6 +98,16 @@ def store_graph_directory(graph, video_id):
     return (str(video_id) + "/graph.png")
 
 
+def separate_resolutions_in_lists(df,video_id):
+    print(video_id)
+    print("---------------------------------------------------")
+    df1 = df.loc[df['s_video_id'] == video_id]
+    list = df1.values.tolist()
+    return list
+
+
+
+
 
 #prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
 #prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
@@ -156,6 +166,11 @@ def store_graph_directory(graph, video_id):
 #store_graph_directory(graph, 123)
 
 df = pd.read_csv('../../data/data_with_predictions_neural_network.csv',delimiter=";")
+#df = df.astype({"s_video_id": int})
+N = 1
+#Drop last N columns of dataframe
+for i in range(N):
+        del df[df.columns.values[-1]]
 #print(df)
 
 s_video_ids = df["s_video_id"].tolist()
@@ -164,7 +179,9 @@ s_video_ids.sort()
 create_directory("plots")
 
 for i in s_video_ids:
-    create_directory_for_video(str(i))
+    directory_path = create_directory_for_video(str(i))
+    datos_for_videos_in_lists = separate_resolutions_in_lists(df,i)
+    print(datos_for_videos_in_lists)
 
 
 
