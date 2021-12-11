@@ -6,6 +6,7 @@ import numpy as np
 
 
 colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",540:"#f1a062",720:"#424346",1080:"#7db6e9"}
+resolution_height_width_dict = {234:416,360:640, 432:768,540:960,720:1280,1080:1920}
 
 def create_directory(directory_name):
     current_directory = os.getcwd()
@@ -42,9 +43,10 @@ def get_max_bitrate(data_list_video):
             max_bitrate = i[0]
     return max_bitrate
 
-def start_graph(max_bitrate,max_vmaf):
+def start_graph(max_bitrate,max_vmaf,title):
     plt.xlim(0, max_bitrate)
     plt.ylim(0, max_vmaf)
+    plt.title(title)
     return plt
 
 def start_graph_with_max_bitrate_for_video(data_for_video_in_lists):
@@ -72,11 +74,13 @@ def get_vmaf(datos):
 #def get_all_points_with_label(resolution_height,graph):
 
 
-def smooth_resolution_graph(resolution_height,graph):
-    xnew = np.linspace(T.min(), T.max(), 300) 
-    spl = make_interp_spline(T, power, k=3)  # type: BSpline
+def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,graph):
+    xnew = np.linspace(min(x_points_list), max(x_points_list), 300) 
+    spl = make_interp_spline(x_points_list, y_points_list, k=3)  # type: BSpline
     power_smooth = spl(xnew)
-    graph.plot(xnew, power_smooth)
+    label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(resolution_height)
+    graph.plot(xnew,power_smooth,label = label_graph,color=get_color_for_resolution(resolution_height))
+    graph.legend()
     return graph
 
 prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
@@ -86,23 +90,23 @@ prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 x1 = [1,2,3]
 y1 = [2,4,1]
 # plotting the line 1 points
-plt.plot(x1, y1, label = "line 1")
+#plt.plot(x1, y1, label = "line 1")
  
 # line 2 points
 x2 = [1,2,3]
 y2 = [4,1,3]
 # plotting the line 2 points
-plt.plot(x2, y2, label = "line 2")
+#plt.plot(x2, y2, label = "line 2")
  
 # naming the x axis
-plt.xlabel('x - axis')
+#plt.xlabel('x - axis')
 # naming the y axis
-plt.ylabel('y - axis')
+#plt.ylabel('y - axis')
 # giving a title to my graph
-plt.title('Two lines on same graph!')
+#plt.title('Two lines on same graph!')
  
 # show a legend on the plot
-plt.legend()
+#plt.legend()
  
 #start_graph(7000,100).show()
 #dict = data_dictionary_by_resolution(prueba)
@@ -118,6 +122,19 @@ plt.legend()
 #datos = [72000,1080,33]
 #print(get_vmaf(datos))
 #smooth_resolution_graph(100,plt).show()
+
+x1 = [1,2,3,4,5]
+y1 = [3,5,7,12,20]
+# plotting the line 1 points
+#plt.plot(x1, y1, label = "line 1")
+
+#xnew = np.linspace(min(x1), max(x1), 300) 
+#spl = make_interp_spline(x1, y1, k=3)  # type: BSpline
+#power_smooth = spl(xnew)
+#plt.plot(xnew, power_smooth)
+#plt.show()
+#plot_smooth_resolution_graph(x1,y1,1080,plt).show()
+#start_graph(7000,100,"encodding_ladder").show()
 
 
 
