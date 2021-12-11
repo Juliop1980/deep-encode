@@ -111,9 +111,9 @@ def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,g
 
 
 def store_graph_directory(graph, video_id):
-    path = str(video_id) + "/graph.png"
+    path = "plots\\" + str(video_id) + "\\graph.png"
     graph.savefig(path)
-    return (str(video_id) + "/graph.png")
+    return (str(video_id) + "\graph.png")
 
 
 def separate_resolutions_in_lists(df,video_id):
@@ -227,7 +227,10 @@ for i in s_video_ids:
 
         graph = plot_smooth_resolution_graph(bitrate_list,vmaf_list,resolution_height,graph)
 
-    graph.show()
+    #graph.show()
+    store_graph_directory(graph,i)
+    graph.clf()
+    #store_graph_directory(graph,i)
 
     
     #graph.show()
