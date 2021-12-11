@@ -16,6 +16,13 @@ def create_directory(directory_name):
        os.makedirs(final_directory)
     return final_directory
 
+def create_directory_for_video(directory_name):
+    current_directory = os.getcwd()
+    final_directory = os.path.join(current_directory,"plots" ,directory_name)
+    if not os.path.exists(final_directory):
+       os.makedirs(final_directory)
+    return final_directory
+
 def data_dictionary_by_resolution(list_of_data_by_resolution):
     dictionary = {}
     for i in list_of_data_by_resolution:
@@ -148,14 +155,16 @@ def store_graph_directory(graph, video_id):
 #graph  = plot_smooth_resolution_graph(x1,y1,1080,plt)
 #store_graph_directory(graph, 123)
 
-df = pd.read_csv('../../data/pse_data.csv')
+df = pd.read_csv('../../data/data_with_predictions_neural_network.csv',delimiter=";")
+#print(df)
 
 s_video_ids = df["s_video_id"].tolist()
 s_video_ids = list(set(s_video_ids))
 s_video_ids.sort()
+create_directory("plots")
 
 for i in s_video_ids:
-    print(i)
+    create_directory_for_video(str(i))
 
 
 
