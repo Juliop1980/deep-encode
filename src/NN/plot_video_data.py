@@ -98,7 +98,7 @@ def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,g
     xnew = np.linspace(min(x_points_list), max(x_points_list), 300) 
     spl = make_interp_spline(x_points_list, y_points_list, k=3)  # type: BSpline
     power_smooth = spl(xnew)
-    label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(resolution_height)
+    label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(int(resolution_height))
     graph.plot(xnew,power_smooth,label = label_graph,color=get_color_for_resolution(resolution_height))
     graph.legend()
     return graph
@@ -197,6 +197,10 @@ for i in s_video_ids:
     datos_for_videos_in_lists = sum(datos_for_videos_in_lists, [])
     #print(datos_for_videos_in_lists
     graph = start_graph_with_max_bitrate_for_video(datos_for_videos_in_lists)
+    ## naming the x axis
+    plt.xlabel('Bitrate')
+    ## naming the y axis
+    plt.ylabel('Vmaf')
     datos_for_videos_in_lists = separate_resolutions_in_lists(df,i)
     datos_for_videos_in_lists = order_by_resolution(datos_for_videos_in_lists)
     #print(datos_for_videos_in_lists)
@@ -204,8 +208,23 @@ for i in s_video_ids:
         resolution_height = get_resolution_height(resolution_list)
         #print(resolution_height)
         color = get_color_for_resolution(resolution_height)
-        print(color)
+        bitrate_list = []
+        vmaf_list = []
+        for datos in resolution_list:
+            bitrate=get_bitrate(datos)
+            bitrate_list.append(bitrate)
+            #print(bitrate)
+            vmaf = get_vmaf(datos)
+            #print(vmaf)
+            vmaf_list.append(vmaf)
 
+        bitrate_list.sort()
+        vmaf_list.sort()
+        bitrate_list[0] -= 0.0000001
+        bitrate_list[-2] += 0.0000001 
+        graph = plot_smooth_resolution_graph(bitrate_list,vmaf_list,resolution_height,graph)
+
+    graph.show()
 
     
     #graph.show()
