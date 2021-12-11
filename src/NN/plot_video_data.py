@@ -83,6 +83,14 @@ def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,g
     graph.legend()
     return graph
 
+
+def store_graph_directory(graph, video_id):
+    path = str(video_id) + "/graph.png"
+    graph.savefig(path)
+    return (str(video_id) + "/graph.png")
+
+
+
 prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
 prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 
@@ -134,7 +142,12 @@ y1 = [3,5,7,12,20]
 #plt.plot(xnew, power_smooth)
 #plt.show()
 #plot_smooth_resolution_graph(x1,y1,1080,plt).show()
-#start_graph(7000,100,"encodding_ladder").show()
+#graph =start_graph(7000,100,"encodding_ladder")
+
+graph  = plot_smooth_resolution_graph(x1,y1,1080,plt)
+store_graph_directory(graph, 123)
+
+
 
 
 
