@@ -3,6 +3,7 @@ import collections
 import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline, BSpline
 import numpy as np
+import pandas as pd
 
 
 colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",540:"#f1a062",720:"#424346",1080:"#7db6e9"}
@@ -91,61 +92,72 @@ def store_graph_directory(graph, video_id):
 
 
 
-prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
-prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
+#prueba = [[72000,1080,33],[722,720,33],[722,540,33]]
+#prueba2 = [[72000,1080,33],[722,1080,33],[722,1080,33]]
 
 # line 1 points
-x1 = [1,2,3]
-y1 = [2,4,1]
-# plotting the line 1 points
-#plt.plot(x1, y1, label = "line 1")
+#x1 = [1,2,3]
+#y1 = [2,4,1]
+## plotting the line 1 points
+##plt.plot(x1, y1, label = "line 1")
  
-# line 2 points
-x2 = [1,2,3]
-y2 = [4,1,3]
-# plotting the line 2 points
-#plt.plot(x2, y2, label = "line 2")
+## line 2 points
+#x2 = [1,2,3]
+#y2 = [4,1,3]
+## plotting the line 2 points
+##plt.plot(x2, y2, label = "line 2")
  
-# naming the x axis
-#plt.xlabel('x - axis')
-# naming the y axis
-#plt.ylabel('y - axis')
-# giving a title to my graph
-#plt.title('Two lines on same graph!')
+## naming the x axis
+##plt.xlabel('x - axis')
+## naming the y axis
+##plt.ylabel('y - axis')
+## giving a title to my graph
+##plt.title('Two lines on same graph!')
  
-# show a legend on the plot
-#plt.legend()
+## show a legend on the plot
+##plt.legend()
  
-#start_graph(7000,100).show()
-#dict = data_dictionary_by_resolution(prueba)
-#ord_dict = order_dict_by_key(dict)
-#print(ord_dict)
-#print(get_list_from_values(ord_dict))
-#print(data_dictionary_by_resolution(prueba))
-#create_directory("prueba")
-#print(order_by_resolution(prueba))
-#start_graph_with_max_bitrate_for_video(prueba).show()
-#print(get_resolution_height(prueba2))
-#print(get_color_for_resolution(432))
-#datos = [72000,1080,33]
-#print(get_vmaf(datos))
-#smooth_resolution_graph(100,plt).show()
+##start_graph(7000,100).show()
+##dict = data_dictionary_by_resolution(prueba)
+##ord_dict = order_dict_by_key(dict)
+##print(ord_dict)
+##print(get_list_from_values(ord_dict))
+##print(data_dictionary_by_resolution(prueba))
+##create_directory("prueba")
+##print(order_by_resolution(prueba))
+##start_graph_with_max_bitrate_for_video(prueba).show()
+##print(get_resolution_height(prueba2))
+##print(get_color_for_resolution(432))
+##datos = [72000,1080,33]
+##print(get_vmaf(datos))
+##smooth_resolution_graph(100,plt).show()
 
-x1 = [1,2,3,4,5]
-y1 = [3,5,7,12,20]
-# plotting the line 1 points
-#plt.plot(x1, y1, label = "line 1")
+#x1 = [1,2,3,4,5]
+#y1 = [3,5,7,12,20]
+## plotting the line 1 points
+##plt.plot(x1, y1, label = "line 1")
 
-#xnew = np.linspace(min(x1), max(x1), 300) 
-#spl = make_interp_spline(x1, y1, k=3)  # type: BSpline
-#power_smooth = spl(xnew)
-#plt.plot(xnew, power_smooth)
-#plt.show()
-#plot_smooth_resolution_graph(x1,y1,1080,plt).show()
-#graph =start_graph(7000,100,"encodding_ladder")
+##xnew = np.linspace(min(x1), max(x1), 300) 
+##spl = make_interp_spline(x1, y1, k=3)  # type: BSpline
+##power_smooth = spl(xnew)
+##plt.plot(xnew, power_smooth)
+##plt.show()
+##plot_smooth_resolution_graph(x1,y1,1080,plt).show()
+##graph =start_graph(7000,100,"encodding_ladder")
 
-graph  = plot_smooth_resolution_graph(x1,y1,1080,plt)
-store_graph_directory(graph, 123)
+#graph  = plot_smooth_resolution_graph(x1,y1,1080,plt)
+#store_graph_directory(graph, 123)
+
+df = pd.read_csv('../../data/pse_data.csv')
+
+s_video_ids = df["s_video_id"].tolist()
+s_video_ids = list(set(s_video_ids))
+s_video_ids.sort()
+
+for i in s_video_ids:
+    print(i)
+
+
 
 
 
