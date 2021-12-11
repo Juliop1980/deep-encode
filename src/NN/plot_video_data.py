@@ -27,7 +27,17 @@ def data_dictionary_by_resolution(list_of_data_by_resolution):
     dictionary = {}
     for i in list_of_data_by_resolution:
         resolution = i[1]
-        dictionary[resolution] = i
+        dictionary[resolution] = []
+        dictionary[resolution].append(i)
+
+    for i in list_of_data_by_resolution:
+        resolution = i[1]
+       # dictionary[resolution] = []
+        dictionary[resolution].append(i)
+
+
+
+    #print(dictionary)
     return dictionary
 
 def order_dict_by_key(dict):
@@ -59,7 +69,9 @@ def start_graph(max_bitrate,max_vmaf,title):
 
 def start_graph_with_max_bitrate_for_video(data_for_video_in_lists):
     max_bitrate = get_max_bitrate(data_for_video_in_lists)
-    graph = start_graph(max_bitrate, 100)
+    video_id = str(int(data_for_video_in_lists[0][3]))
+    title = "Video " + video_id
+    graph = start_graph(max_bitrate, 100,title)
     return graph
 
 def get_resolution_height(lists_with_resolution):
@@ -99,8 +111,8 @@ def store_graph_directory(graph, video_id):
 
 
 def separate_resolutions_in_lists(df,video_id):
-    print(video_id)
-    print("---------------------------------------------------")
+    #print(video_id)
+    #print("---------------------------------------------------")
     df1 = df.loc[df['s_video_id'] == video_id]
     list = df1.values.tolist()
     return list
@@ -181,7 +193,23 @@ create_directory("plots")
 for i in s_video_ids:
     directory_path = create_directory_for_video(str(i))
     datos_for_videos_in_lists = separate_resolutions_in_lists(df,i)
-    print(datos_for_videos_in_lists)
+    datos_for_videos_in_lists = order_by_resolution(datos_for_videos_in_lists)
+    datos_for_videos_in_lists = sum(datos_for_videos_in_lists, [])
+    #print(datos_for_videos_in_lists
+    graph = start_graph_with_max_bitrate_for_video(datos_for_videos_in_lists)
+    datos_for_videos_in_lists = separate_resolutions_in_lists(df,i)
+    datos_for_videos_in_lists = order_by_resolution(datos_for_videos_in_lists)
+    #print(datos_for_videos_in_lists)
+    for resolution_list in datos_for_videos_in_lists:
+        resolution_height = get_resolution_height(resolution_list)
+        #print(resolution_height)
+        color = get_color_for_resolution(resolution_height)
+        print(color)
+
+
+    
+    #graph.show()
+    break
 
 
 
