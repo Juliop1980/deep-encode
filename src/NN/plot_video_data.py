@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline, BSpline
 import numpy as np
 import pandas as pd
-
+from scipy.spatial import ConvexHull, convex_hull_plot_2d
 
 colors_for_resolutions= {234:"#e3d05d",360:"#eb5d80", 432:"#7f86e5",540:"#f1a062",720:"#424346",1080:"#7db6e9"}
 resolution_height_width_dict = {234:416,360:640, 432:768,540:960,720:1280,1080:1920}
@@ -106,7 +106,13 @@ def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,g
     power_smooth = spl(xnew)
     label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(int(resolution_height))
     graph.plot(xnew,power_smooth,label = label_graph,color=get_color_for_resolution(resolution_height))
+  
+    #points.append([1,2])
     graph.legend()
+    xnew = xnew.tolist()
+    power_smooth= power_smooth.tolist()
+    for i in range(len(xnew)):
+        points.append([int(xnew[i]),int(power_smooth[i])])
     return graph
 
 
@@ -196,7 +202,18 @@ s_video_ids = list(set(s_video_ids))
 s_video_ids.sort()
 create_directory("plots")
 
+#rng = np.random.default_rng()
+#points = rng.random((30, 2))   # 30 random points in 2-D
+#print(type(points[0]))
+#hull = ConvexHull(points)
+#plt.plot(points[:,0], points[:,1], 'o')
+#for simplex in hull.simplices:
+#    plt.plot(points[simplex, 0], points[simplex, 1], 'k-')
+##plt.show()
+
 for i in s_video_ids:
+    points = []
+   # points = np.asarray(points)
     directory_path = create_directory_for_video(str(i))
     datos_for_videos_in_lists = separate_resolutions_in_lists(df,i)
     datos_for_videos_in_lists = order_by_resolution(datos_for_videos_in_lists)
@@ -223,14 +240,37 @@ for i in s_video_ids:
             vmaf = get_vmaf(datos)
             #print(vmaf)
             vmaf_list.append(vmaf)
+            points_aux = [int(bitrate),int(vmaf)]
+           # points_aux = np.asarray(points_aux )
+            #print(points_aux)
+            points.append(points_aux)
+
+   
 
 
         graph = plot_smooth_resolution_graph(bitrate_list,vmaf_list,resolution_height,graph)
+
+    points = np.array(points)
+    hull = ConvexHull(points)
+    #graph.plot(points[:,0], points[:,1], 'o')
+    times = 0
+    for simplex in hull.simplices:
+        if times == 0:
+            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="red",label="Convex Hull")
+            times = 1
+        else:
+            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="red")
+
+
+    graph.legend()
+    #graph.show()
 
     #graph.show()
     store_graph_directory(graph,i)
     graph.clf()
     #store_graph_directory(graph,i)
+  
+
 
     
     #graph.show()
