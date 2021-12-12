@@ -256,10 +256,10 @@ for i in s_video_ids:
     times = 0
     for simplex in hull.simplices:
         if times == 0:
-            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="red",label="Convex Hull")
+            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="green",label="Convex Hull")
             times = 1
         else:
-            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="red")
+            graph.plot(points[simplex, 0], points[simplex, 1], 'k-',color ="green")
 
 
     graph.legend()
