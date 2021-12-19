@@ -3,6 +3,9 @@ import pandas as pd
 import pprint
 
 list_of_bitrate = [235,375,560,750,1050,1750,2350,3000,4300,5800]
+dict_resolution = {234:416,360:640, 432:768,540:960,720:1280,1080:1920}
+#print(type(dict_resolution))
+#print(dict_resolution[234])
 
 def make_dir(name):
     current_directory = os.getcwd()
@@ -88,7 +91,43 @@ def get_data_with_most_vmaf(lists):
 
 def get_resolution(list):
     resolution_width = list[0]
-    resolution_heigth = dict_resolution[resolution_width]
+    #print(type(dict_resolution))
+    #print(resolution_width )
+    resolution_height = dict_resolution[resolution_width]
+  
+    resolution =str(resolution_height) + "x"+ str(int(resolution_width))
+    return resolution
+
+def get_video_id(list):
+    return int(list[2])
+
+def get_vmaf(list):
+    return list[1]
+
+def make_results_in_lists(x,y,z):
+    return [x,y,z]
+
+def get_path(video_id):
+    path = "encodding_ladders\\" + str(video_id) + "\\encodding_ladder.pdf"
+    return path
+
+def store_in_pdf(ladder,path):
+    fig, ax = plt.subplots()
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
+    df = pd.DataFrame(np.random.randn(10, 4), columns=list('ABCD'))
+    ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+    fig.tight_layout()
+    plt.show()
+    plt.savefig(path, bbox_inches='tight')
+
+def store_encodding_ladder(video_id,ladder):
+    dir_path = get_path(video_id)
+    store_in_pdf(ladder,dir_path)
+    #ath = "plots\\" + str(video_id) + "\\graph.png"
+    #raph.savefig(path)
+    return (dir_path)
 
 
 #print(make_dir("encodding_ladders"))
@@ -102,5 +141,14 @@ list_video = dict_by_video_id[418]
 #pprint.pprint(dict_by_video_id)
 #pprint.pprint(separate_by_range(list))
 
-list_by_range=separate_by_range(dict_by_video_id[418])[235]
-print(get_data_with_most_vmaf(list_by_range))
+list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
+#print(get_data_with_most_vmaf(list_by_range))
+#print(get_resolution(list_by_range))
+print(get_video_id(list_by_range))
+
+print(get_vmaf(list_by_range))
+
+#print(make_results_in_lists(get_video_id(list_by_range),get_vmaf(list_by_range),2))
+print(get_path(418))
+
+ladder = [235, "320x240"]
