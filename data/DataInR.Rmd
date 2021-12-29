@@ -5,6 +5,20 @@ date: "24 11 21"
 output: pdf_document
 ---
 
+#InstallPackages 
+```{r}
+#Install packages, which are not yet installed
+package <- c("dummies","ggplot2","Metrics","GGally","dplyr","tidyr","forecast","ggmap","datetime","fpc")
+
+installedPackages <- package %in% rownames(installed.packages())
+if(any(installedPackages == FALSE)){
+  install.packages(package[!installedPackages])
+}
+
+#FUNKTIONIERT NOCH NICHT ACHTUNG
+
+```
+
 
 #LoadPackages
 ```{r}
@@ -657,14 +671,6 @@ cat("The test Model has a slightly worse MAE but an better sMAPE, therefore ther
 
 ```
 
-
-```{r}
-
-
-
-```
-
-
 #Prediction
 ```{r}
 
@@ -674,10 +680,10 @@ predicitionVMAF <- data.frame(predicitionVMAF)
 acurateVMAF <- cbind(daten[,c(1,43)],predicitionVMAF)
 acurateVMAF
 
+daten$vmafPredicted = predicitionVMAF$fit
+
 
 ```
-
-
 
 
 #ConvexHullFertigeSchnipsel
@@ -709,7 +715,7 @@ for(i in unique(daten$ï..s_video_id)) {
   
   print(gi)
   
-  ggsave(filename = sprintf('%sa.png', i), plot = gi)
+  #ggsave(filename = sprintf('%sa.png', i), plot = gi)
 }
 
 
@@ -725,17 +731,30 @@ for(i in unique(daten$ï..s_video_id)) {
   #add line to the other graph
 
 #TabelleIntervalle: 235,375,560,750,1050,1750,2350,3000,4300,5800
-daten$intervallgroup = ifelse(daten$t_average_bitrate<235,1, ifelse(daten$t_average_bitrate<375,2,ifelse(daten$t_average_bitrate<560,3, ifelse(daten$t_average_bitrate<750,4, ifelse(daten$t_average_bitrate<1050,5, ifelse(daten$t_average_bitrate<1750,6,ifelse(daten$t_average_bitrate<2350,7,ifelse(daten$t_average_bitrate<3000,8,ifelse(daten$t_average_bitrate<4300,9,ifelse(daten$t_average_bitrate<5800,10,11))))))))))
+daten$bitrate = ifelse(daten$t_average_bitrate<235,235, ifelse(daten$t_average_bitrate<375,375,ifelse(daten$t_average_bitrate<560,560, ifelse(daten$t_average_bitrate<750,750, ifelse(daten$t_average_bitrate<1050,1050, ifelse(daten$t_average_bitrate<1750,1750,ifelse(daten$t_average_bitrate<2350,2350,ifelse(daten$t_average_bitrate<3000,3000,ifelse(daten$t_average_bitrate<4300,4300,ifelse(daten$t_average_bitrate<5800,5800,5800))))))))))
 
 #ConvexHullWerte
 
-hello <- as.data.frame(
+encodingLadder <- as.data.frame(
 daten %>%
-  group_by(ï..s_video_id, intervallgroup) %>%
+  group_by(ï..s_video_id, bitrate) %>%
   summarise(maxVMAF = max(vmafPredicted, .groups = FALSE)))
 
 #fertig
-daten = merge(daten, hello, by=c("ï..s_video_id","intervallgroup"), all = T)
+daten = merge(daten, encodingLadder, by=c("ï..s_video_id","bitrate"), all = T)
+
+encodingLadderFinished <- as.data.frame(
+  daten %>%
+  group_by(ï..s_video_id, bitrate, maxVMAF) %>%
+  summarise(resolution = max(e_height, .groups = FALSE)))
+
+encodingLadderFinished$resolution = ifelse(encodingLadderFinished$resolution == 234,'416x234',ifelse(encodingLadderFinished$resolution == 540,'960x540',ifelse(encodingLadderFinished$resolution == 360,'640x360',ifelse(encodingLadderFinished$resolution == 432,'768x432',ifelse(encodingLadderFinished$resolution == 720,'1280x720',ifelse(encodingLadderFinished$resolution == 1080,'1920x1080','fehler'))))))
+
+encodingLadderFinished <- encodingLadderFinished[,c("ï..s_video_id","bitrate","resolution","maxVMAF")]
+
+encodingLadderFinished
+
+
 
 
 for(i in unique(daten$ï..s_video_id)) {
@@ -760,13 +779,35 @@ for(i in unique(daten$ï..s_video_id)) {
     ) +
     geom_line()
   
-  print(gi)
+  gi2 <- ggplot(aes(
+        x = t_average_bitrate,
+        y = maxVMAF,
+        colour = "ConvexHull",
+        ymin = 0,
+        ymax = 120,
+        xmax = 7000,
+        xmin = 0
+      ),
+      data = subset(daten,  ï..s_video_id == i)
+    ) +
+    labs(
+      title = sprintf("Convex Hull"),
+      subtitle = daten[daten$ï..s_video_id == i, ]$ï..s_video_id,
+      caption = if (daten[daten$ï..s_video_id == i, ]$c_content_category == "") {
+        "No Content Category"
+      } else{
+        daten[daten$ï..s_video_id == i, ]$c_content_category
+      },
+      x = "Bitrate",
+      y = "vmaf Predicted"
+    ) +
+    geom_line()
   
-  ggsave(filename = sprintf('%s.png', i), plot = gi)
+  print(gi)
+  print(gi2)
+  
+  #ggsave(filename = sprintf('%s.png', i), plot = gi)
 }
 
 
 ```
-
-
-
