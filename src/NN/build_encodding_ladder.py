@@ -137,19 +137,33 @@ def store_encodding_ladder(video_id,ladder):
     #raph.savefig(path)
     return (dir_path)
 
+def write_to_csv(dataframe,path):
+    dataframe.to_csv(path + '/results.csv', mode='a', header =False,index=False)
+    return(path + '/results.csv')
+
+def store_in_excel_encodding_ladder(video_id,encodding_ladder):
+    current_path = os.getcwd()
+    for i in encodding_ladder:
+        i.insert(0,str(video_id))
+    y=np.array([np.array(xi) for xi in encodding_ladder])
+    df = pd.DataFrame(y, columns=["Video ID", "Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
+    path = write_to_csv(df,current_path)
+    return path
+
+
 
 #print(make_dir("encodding_ladders"))
 
 #print(get_all_data_prediction('../../data/data_with_predictions_neural_network.csv'))
-df = get_all_data_prediction('../../data/data_with_predictions_neural_network.csv')
-list_value = df.values.tolist()
-dict_by_video_id = dict_by_video_id(list_value)
-list_video = dict_by_video_id[418]
+#df = get_all_data_prediction('../../data/data_with_predictions_neural_network.csv')
+#list_value = df.values.tolist()
+#dict_by_video_id = dict_by_video_id(list_value)
+#list_video = dict_by_video_id[418]
 #print(dict_by_video_id)
 #pprint.pprint(dict_by_video_id)
 #pprint.pprint(separate_by_range(list))
 
-list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
+#list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
 #print(get_data_with_most_vmaf(list_by_range))
 #print(get_resolution(list_by_range))
 #print(get_video_id(list_by_range))
@@ -159,5 +173,8 @@ list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
 #print(make_results_in_lists(get_video_id(list_by_range),get_vmaf(list_by_range),2))
 #print(get_path(418))
 
-ladder = [[235, "320x240",99], [375, "384x288",100],[560,"512x384",100], [750,"512x384",100],[1050,"512x384",100],[1750,"512x384",100],[2350,"512x384",100],[3000,"512x384",100],[4300,"512x384",100],[5800,"512x384",100]]
-store_encodding_ladder(418, ladder)
+#ladder = [[235, "320x240",99], [375, "384x288",100],[560,"512x384",100], [750,"512x384",100],[1050,"512x384",100],[1750,"512x384",100],[2350,"512x384",100],[3000,"512x384",100],[4300,"512x384",100],[5800,"512x384",100]]
+#store_encodding_ladder(418, ladder)
+#store_in_excel_encodding_ladder(418, ladder)
+
+make_dir("encodding_ladders")
