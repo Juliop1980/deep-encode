@@ -127,6 +127,7 @@ def store_in_pdf(ladder,path,video_id):
     #plt.show()
     plt.title('Video ' + str(video_id) )
     plt.savefig(path, bbox_inches='tight')
+    plt.clf()
 
 def store_encodding_ladder(video_id,ladder):
     dir_path = get_path(video_id)
@@ -185,4 +186,27 @@ list_value = data.values.tolist()
 #print(list_value)
 separated_data =dict_by_video_id(list_value)
 for key in separated_data:
+    ladder_result=[]
     make_dir("encodding_ladders\\"+ str(int(key)))
+    lists_of_data =separated_data[key]
+    #print(lists_of_data)
+    dict_by_bitrate_range = separate_by_range(lists_of_data)
+    #pprint.pprint(dict_by_bitrate_range)
+    for key in dict_by_bitrate_range:
+        best_vmaf= get_data_with_most_vmaf(dict_by_bitrate_range[key])
+        #print(best_vmaf)
+        if best_vmaf != None:
+            #print(best_vmaf)
+            bitrate=key
+            resolution = get_resolution(best_vmaf)
+            video_id=get_video_id(best_vmaf)
+            vmaf=get_vmaf(best_vmaf)
+            list_result = make_results_in_lists(bitrate,resolution,vmaf)
+            ladder_result.append(list_result)
+            #final_result.append(list_result)
+    store_encodding_ladder(key, ladder_result)
+        
+
+    
+    #print(final_result)
+    #break
