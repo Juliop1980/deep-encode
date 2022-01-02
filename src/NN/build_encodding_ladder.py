@@ -110,7 +110,8 @@ def make_results_in_lists(x,y,z):
     return [x,y,z]
 
 def get_path(video_id):
-    path = "encodding_ladders\\" + str(video_id) + "\\encodding_ladder.pdf"
+    #path = "encodding_ladders" + "\\\\"+ str(video_id) + "\\\\" +"encodding_ladder.pdf"
+    path =os.path.join("encodding_ladders",str(video_id),"encodding_ladder.pdf")
     return path
 
 def store_in_pdf(ladder,path):
@@ -118,14 +119,19 @@ def store_in_pdf(ladder,path):
     fig.patch.set_visible(False)
     ax.axis('off')
     ax.axis('tight')
-    df = pd.DataFrame(np.random.randn(10, 3), columns=["Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
+    #print(np.random.randn(10, 3))
+    y=np.array([np.array(xi) for xi in ladder])
+    df = pd.DataFrame(y, columns=["Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
     ax.table(cellText=df.values, colLabels=df.columns, loc='center')
     fig.tight_layout()
-    plt.show()
+    #plt.show()
     plt.savefig(path, bbox_inches='tight')
 
 def store_encodding_ladder(video_id,ladder):
     dir_path = get_path(video_id)
+    make_dir("encodding_ladders\\" + str(video_id))
+
+
     store_in_pdf(ladder,dir_path)
     #ath = "plots\\" + str(video_id) + "\\graph.png"
     #raph.savefig(path)
