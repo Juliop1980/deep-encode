@@ -176,5 +176,13 @@ def store_in_excel_encodding_ladder(video_id,encodding_ladder):
 #ladder = [[235, "320x240",99], [375, "384x288",100],[560,"512x384",100], [750,"512x384",100],[1050,"512x384",100],[1750,"512x384",100],[2350,"512x384",100],[3000,"512x384",100],[4300,"512x384",100],[5800,"512x384",100]]
 #store_encodding_ladder(418, ladder)
 #store_in_excel_encodding_ladder(418, ladder)
-
+file_path='../../data/data_with_predictions_neural_network.csv'
 make_dir("encodding_ladders")
+final_result = []
+data = get_all_data_prediction(file_path)
+#print(data)
+list_value = data.values.tolist()
+#print(list_value)
+separated_data =dict_by_video_id(list_value)
+for key in separated_data:
+    make_dir("encodding_ladders\\"+ str(int(key)))
