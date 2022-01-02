@@ -122,7 +122,7 @@ def store_in_pdf(ladder,path,video_id):
     #print(np.random.randn(10, 3))
     y=np.array([np.array(xi) for xi in ladder])
     df = pd.DataFrame(y, columns=["Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
-    ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+    ax.table(cellText=df.values, colLabels=df.columns, loc='center',cellLoc='center')
     fig.tight_layout()
     #plt.show()
     plt.title('Video ' + str(video_id) )
