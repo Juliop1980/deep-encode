@@ -1,7 +1,7 @@
 ---
 title: "Advanced Web Technologies"
 author: "Ruhan, Julio, Vinzenz"
-date: "24 11 21"
+date: "02 01 22"
 output: pdf_document
 ---
 
@@ -15,7 +15,7 @@ if(any(installedPackages == FALSE)){
   install.packages(package[!installedPackages])
 }
 
-#FUNKTIONIERT NOCH NICHT ACHTUNG
+
 
 ```
 
@@ -221,12 +221,6 @@ summary(daten)
 
 ```
 
-#DataVisualization
-```{r}
-
-
-
-```
 
 #CorrelationTowardsVMAF
 ```{r}
@@ -255,6 +249,7 @@ ggpairs(daten[, c("e_crf","t_average_bitrate", "e_width", "e_height", "e_codec_l
 cat("All Graphs look good, so we can use all of the variables in the Model")
 
 ```
+
 #Modell
 ```{r}
 
@@ -686,10 +681,9 @@ daten$vmafPredicted = predicitionVMAF$fit
 ```
 
 
-#ConvexHullFertigeSchnipsel
+#ConvexHull
 ```{r}
 
-#funktioniert
 for(i in unique(daten$ï..s_video_id)) {
   gi <-
     ggplot(
@@ -724,12 +718,6 @@ for(i in unique(daten$ï..s_video_id)) {
 #getConvexHullNumbers
 ```{r}
 
-#1) new table with the highest vmaf for the every bitrate 
-  #for jede videoId
-  #add new tabelle
-  #highestVmaf for every bitrate intervall [0-235, 236-480...]
-  #add line to the other graph
-
 #TabelleIntervalle: 235,375,560,750,1050,1750,2350,3000,4300,5800
 daten$bitrate = ifelse(daten$t_average_bitrate<235,235, ifelse(daten$t_average_bitrate<375,375,ifelse(daten$t_average_bitrate<560,560, ifelse(daten$t_average_bitrate<750,750, ifelse(daten$t_average_bitrate<1050,1050, ifelse(daten$t_average_bitrate<1750,1750,ifelse(daten$t_average_bitrate<2350,2350,ifelse(daten$t_average_bitrate<3000,3000,ifelse(daten$t_average_bitrate<4300,4300,ifelse(daten$t_average_bitrate<5800,5800,5800))))))))))
 
@@ -740,7 +728,6 @@ daten %>%
   group_by(ï..s_video_id, bitrate) %>%
   summarise(maxVMAF = max(vmafPredicted, .groups = FALSE)))
 
-#fertig
 daten = merge(daten, encodingLadder, by=c("ï..s_video_id","bitrate"), all = T)
 
 encodingLadderFinished <- as.data.frame(
@@ -811,3 +798,4 @@ for(i in unique(daten$ï..s_video_id)) {
 
 
 ```
+
