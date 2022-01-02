@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import pprint
+from matplotlib import pyplot as plt
+import numpy as np
 
 list_of_bitrate = [235,375,560,750,1050,1750,2350,3000,4300,5800]
 dict_resolution = {234:416,360:640, 432:768,540:960,720:1280,1080:1920}
@@ -116,7 +118,7 @@ def store_in_pdf(ladder,path):
     fig.patch.set_visible(False)
     ax.axis('off')
     ax.axis('tight')
-    df = pd.DataFrame(np.random.randn(10, 4), columns=list('ABCD'))
+    df = pd.DataFrame(np.random.randn(10, 3), columns=["Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
     ax.table(cellText=df.values, colLabels=df.columns, loc='center')
     fig.tight_layout()
     plt.show()
@@ -134,8 +136,8 @@ def store_encodding_ladder(video_id,ladder):
 
 #print(get_all_data_prediction('../../data/data_with_predictions_neural_network.csv'))
 df = get_all_data_prediction('../../data/data_with_predictions_neural_network.csv')
-list = df.values.tolist()
-dict_by_video_id = dict_by_video_id(list)
+list_value = df.values.tolist()
+dict_by_video_id = dict_by_video_id(list_value)
 list_video = dict_by_video_id[418]
 #print(dict_by_video_id)
 #pprint.pprint(dict_by_video_id)
@@ -144,11 +146,12 @@ list_video = dict_by_video_id[418]
 list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
 #print(get_data_with_most_vmaf(list_by_range))
 #print(get_resolution(list_by_range))
-print(get_video_id(list_by_range))
+#print(get_video_id(list_by_range))
 
-print(get_vmaf(list_by_range))
+#print(get_vmaf(list_by_range))
 
 #print(make_results_in_lists(get_video_id(list_by_range),get_vmaf(list_by_range),2))
-print(get_path(418))
+#print(get_path(418))
 
-ladder = [235, "320x240"]
+ladder = [[235, "320x240",99], [375, "384x288",100],[560,"512x384",100], [750,"512x384",100],[1050,"512x384",100],[1750,"512x384",100],[2350,"512x384",100],[3000,"512x384",100],[4300,"512x384",100],[5800,"512x384",100]]
+store_encodding_ladder(418, ladder)
