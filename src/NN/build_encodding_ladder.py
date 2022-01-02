@@ -114,7 +114,7 @@ def get_path(video_id):
     path =os.path.join("encodding_ladders",str(video_id),"encodding_ladder.pdf")
     return path
 
-def store_in_pdf(ladder,path):
+def store_in_pdf(ladder,path,video_id):
     fig, ax = plt.subplots()
     fig.patch.set_visible(False)
     ax.axis('off')
@@ -125,14 +125,14 @@ def store_in_pdf(ladder,path):
     ax.table(cellText=df.values, colLabels=df.columns, loc='center')
     fig.tight_layout()
     #plt.show()
+    plt.title('Video ' + str(video_id) )
     plt.savefig(path, bbox_inches='tight')
 
 def store_encodding_ladder(video_id,ladder):
     dir_path = get_path(video_id)
     make_dir("encodding_ladders\\" + str(video_id))
 
-
-    store_in_pdf(ladder,dir_path)
+    store_in_pdf(ladder,dir_path,video_id)
     #ath = "plots\\" + str(video_id) + "\\graph.png"
     #raph.savefig(path)
     return (dir_path)
