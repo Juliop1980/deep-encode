@@ -104,7 +104,7 @@ def plot_smooth_resolution_graph(x_points_list,y_points_list,resolution_height,g
     y_points_list=lists[1]
     spl = make_interp_spline(x_points_list, y_points_list, k=3)  # type: BSpline
     power_smooth = spl(xnew)
-    label_graph = str(resolution_height_width_dict[resolution_height]) + "x" + str(int(resolution_height))
+    label_graph =  str(int(resolution_height))+ "x" +str(resolution_height_width_dict[resolution_height])
     graph.plot(xnew,power_smooth,label = label_graph,color=get_color_for_resolution(resolution_height))
   
     #points.append([1,2])
@@ -265,8 +265,8 @@ for i in s_video_ids:
     graph.legend()
     #graph.show()
 
-    #graph.show()
-    store_graph_directory(graph,i)
+    graph.show()
+    #store_graph_directory(graph,i)
     graph.clf()
     #store_graph_directory(graph,i)
   
