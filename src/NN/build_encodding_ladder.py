@@ -217,8 +217,13 @@ for key in separated_data:
             #final_result.append(list_result)
 
     #print(video_id)
-    graph= store_encodding_ladder(video_id, ladder_result)
-    graph.clf()
+    #graph= store_encodding_ladder(video_id, ladder_result)
+    #graph.clf()
+
+    store_in_excel_encodding_ladder(video_id,ladder_result)
+    columns=["Video ID", "Bitrate (kbps)", "Resolution", "VMAF (Predicted)"]
+    file = pd.read_csv("results.csv")
+    file.to_csv("results.csv", header=columns, index=False)
         
 
     
