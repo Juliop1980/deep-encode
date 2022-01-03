@@ -88,9 +88,6 @@ def get_data_with_most_vmaf(lists):
     list =get_list_with_certain_vmaf(lists,vmaf)
     return list
 
-    
-    #print(dict_by_bitrate)
-
 def get_resolution(list):
     resolution_width = list[0]
     #print(type(dict_resolution))
@@ -126,17 +123,19 @@ def store_in_pdf(ladder,path,video_id):
     fig.tight_layout()
     #plt.show()
     plt.title('Video ' + str(video_id) )
+    #plt.show()
     plt.savefig(path, bbox_inches='tight')
     plt.clf()
+    return plt
 
 def store_encodding_ladder(video_id,ladder):
     dir_path = get_path(video_id)
     make_dir("encodding_ladders\\" + str(video_id))
 
-    store_in_pdf(ladder,dir_path,video_id)
+    graph = store_in_pdf(ladder,dir_path,video_id)
     #ath = "plots\\" + str(video_id) + "\\graph.png"
     #raph.savefig(path)
-    return (dir_path)
+    return graph
 
 def write_to_csv(dataframe,path):
     dataframe.to_csv(path + '/results.csv', mode='a', header =False,index=False)
@@ -192,19 +191,34 @@ for key in separated_data:
     #print(lists_of_data)
     dict_by_bitrate_range = separate_by_range(lists_of_data)
     #pprint.pprint(dict_by_bitrate_range)
+    #print("VIDEO ID -- " + str(key))
     for key in dict_by_bitrate_range:
         best_vmaf= get_data_with_most_vmaf(dict_by_bitrate_range[key])
-        #print(best_vmaf)
-        if best_vmaf != None:
-            #print(best_vmaf)
-            bitrate=key
-            resolution = get_resolution(best_vmaf)
-            video_id=get_video_id(best_vmaf)
-            vmaf=get_vmaf(best_vmaf)
-            list_result = make_results_in_lists(bitrate,resolution,vmaf)
-            ladder_result.append(list_result)
+        if best_vmaf == None:
+            temp = list(dict_by_bitrate_range)
+            if key != 5800:
+                res = temp[temp.index(key) + 1]
+                best_vmaf= get_data_with_most_vmaf(dict_by_bitrate_range[res])
+
+            if key==5800:
+                res = temp[temp.index(key) - 1]
+                best_vmaf= get_data_with_most_vmaf(dict_by_bitrate_range[res])
+
+        bitrate=key
+        resolution = get_resolution(best_vmaf)
+        video_id=get_video_id(best_vmaf)
+        vmaf=get_vmaf(best_vmaf)
+        list_result = make_results_in_lists(bitrate,resolution,vmaf)
+        ladder_result.append(list_result)
+        #print("Bitrate Range -- " + str(key))
+       # print(best_vmaf)
+    #print(ladder_result)
+
             #final_result.append(list_result)
-    store_encodding_ladder(key, ladder_result)
+
+    #print(video_id)
+    graph= store_encodding_ladder(video_id, ladder_result)
+    graph.clf()
         
 
     
