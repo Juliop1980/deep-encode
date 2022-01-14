@@ -135,6 +135,10 @@ python build_encodding_ladder.py
 
 ## Documentation
 
+The Documentation is distributed in the following places:
+
+- **Code comments**, which ensure readability
+
 ## Tests
 
 ## Authors
