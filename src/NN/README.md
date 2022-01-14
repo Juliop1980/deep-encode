@@ -15,7 +15,7 @@ Currently, the Scripts contained in this folder allow to:
 - Build the encodding ladder following Netflix´s bitrate ranges, the best setting for every bitrate range.
 
 ### Development
-The scripts are currently under development. The development is done using *Python 3.6.6* and *Django 1.11.15*. The rest of the requirements can be found in the [requirements file (requirements.txt)](requirements.txt).
+The scripts are currently under development. The development is done using *Python 3.9.9*. The rest of the requirements can be found in the [requirements file (requirements.txt)](requirements.txt).
 
 ## Set up
 
@@ -102,14 +102,26 @@ _A requirements file was generated that will allow the automatic installation of
 pip install -r requirements.txt
 ```
 
-## Run
+## Run and coding ⌨️
+
+### Structure of the code
+
+_The features are divided into three different scripts which follow this order by logic: 1st  **neuralnetworkmodel.py**, 2nd **plot_video_data.py** and 3rd **build_encodding_ladder.py**._
+
 
 ### Important commands
 
-_to run the script_
+_to run the scripts_
 
 ```
 python neuralnetworkmodel.py
+```
+```
+python plot_video_data.py
+```
+
+```
+python build_encodding_ladder.py
 ```
 
 ## Documentation
