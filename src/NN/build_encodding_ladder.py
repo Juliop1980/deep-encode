@@ -1,3 +1,4 @@
+# Script to build the encodding ladder for every video with the predicted data calculated in previous steps
 import os
 import pandas as pd
 import pprint
@@ -6,9 +7,8 @@ import numpy as np
 
 list_of_bitrate = [235,375,560,750,1050,1750,2350,3000,4300,5800]
 dict_resolution = {234:416,360:640, 432:768,540:960,720:1280,1080:1920}
-#print(type(dict_resolution))
-#print(dict_resolution[234])
 
+# make directory in current path with given name
 def make_dir(name):
     current_directory = os.getcwd()
     final_directory = os.path.join(current_directory, name)
@@ -16,11 +16,13 @@ def make_dir(name):
        os.makedirs(final_directory)
     return final_directory
 
+# get the data with the predicted vmaf looking in the path given
 def get_all_data_prediction(file_path):
     df = pd.read_csv(file_path,delimiter=";")
     df = df.iloc[: , :-1]
     return df
 
+# get dictionary with the key being the video id and the value a list of lists of all the data for that particular video
 def dict_by_video_id(data):
     data_dict = {}
     for row in data:
@@ -32,6 +34,7 @@ def dict_by_video_id(data):
     #print(data_dict)
     return data_dict
 
+# creates an empty dictionary with the keys being the bitrate values in which netflix splits their encodding ladder
 def create_dict_by_range():
     data_dict = {}
     for row in list_of_bitrate:
@@ -39,6 +42,7 @@ def create_dict_by_range():
 
     return data_dict
 
+# get the bitrate range in which a certain bitrate is categorized in the encodding ladder
 def get_range_bitrate(bitrate):
     if bitrate <375:
         return 235
@@ -68,9 +72,9 @@ def separate_by_range(lists_of_rows):
     dict_by_bitrate = create_dict_by_range()
     for row in lists_of_rows:
         bitrate = row[0]
-        #print(bitrate)
+     
         range= get_range_bitrate(bitrate)
-        #print(range)
+    
         dict_by_bitrate[range].append(row[1:])
 
     return dict_by_bitrate
@@ -90,8 +94,6 @@ def get_data_with_most_vmaf(lists):
 
 def get_resolution(list):
     resolution_width = list[0]
-    #print(type(dict_resolution))
-    #print(resolution_width )
     resolution_height = dict_resolution[resolution_width]
   
     resolution =str(resolution_height) + "x"+ str(int(resolution_width))
@@ -107,7 +109,6 @@ def make_results_in_lists(x,y,z):
     return [x,y,z]
 
 def get_path(video_id):
-    #path = "encodding_ladders" + "\\\\"+ str(video_id) + "\\\\" +"encodding_ladder.pdf"
     path =os.path.join("encodding_ladders",str(video_id),"encodding_ladder.pdf")
     return path
 
@@ -116,14 +117,13 @@ def store_in_pdf(ladder,path,video_id):
     fig.patch.set_visible(False)
     ax.axis('off')
     ax.axis('tight')
-    #print(np.random.randn(10, 3))
+
     y=np.array([np.array(xi) for xi in ladder])
     df = pd.DataFrame(y, columns=["Bitrate (kbps)", "Resolution", "VMAF (Predicted)"])
     ax.table(cellText=df.values, colLabels=df.columns, loc='center',cellLoc='center')
     fig.tight_layout()
-    #plt.show()
+ 
     plt.title('Video ' + str(video_id) )
-    #plt.show()
     plt.savefig(path, bbox_inches='tight')
     plt.clf()
     return plt
@@ -133,8 +133,7 @@ def store_encodding_ladder(video_id,ladder):
     make_dir("encodding_ladders\\" + str(video_id))
 
     graph = store_in_pdf(ladder,dir_path,video_id)
-    #ath = "plots\\" + str(video_id) + "\\graph.png"
-    #raph.savefig(path)
+
     return graph
 
 def write_to_csv(dataframe,path):
@@ -151,47 +150,21 @@ def store_in_excel_encodding_ladder(video_id,encodding_ladder):
     return path
 
 
-
-#print(make_dir("encodding_ladders"))
-
-#print(get_all_data_prediction('../../data/data_with_predictions_neural_network.csv'))
-#df = get_all_data_prediction('../../data/data_with_predictions_neural_network.csv')
-#list_value = df.values.tolist()
-#dict_by_video_id = dict_by_video_id(list_value)
-#list_video = dict_by_video_id[418]
-#print(dict_by_video_id)
-#pprint.pprint(dict_by_video_id)
-#pprint.pprint(separate_by_range(list))
-
-#list_by_range=separate_by_range(dict_by_video_id[418])[235][0]
-#print(get_data_with_most_vmaf(list_by_range))
-#print(get_resolution(list_by_range))
-#print(get_video_id(list_by_range))
-
-#print(get_vmaf(list_by_range))
-
-#print(make_results_in_lists(get_video_id(list_by_range),get_vmaf(list_by_range),2))
-#print(get_path(418))
-
-#ladder = [[235, "320x240",99], [375, "384x288",100],[560,"512x384",100], [750,"512x384",100],[1050,"512x384",100],[1750,"512x384",100],[2350,"512x384",100],[3000,"512x384",100],[4300,"512x384",100],[5800,"512x384",100]]
-#store_encodding_ladder(418, ladder)
-#store_in_excel_encodding_ladder(418, ladder)
 file_path='../../data/data_with_predictions_neural_network.csv'
 make_dir("encodding_ladders")
 final_result = []
 data = get_all_data_prediction(file_path)
-#print(data)
+
 list_value = data.values.tolist()
-#print(list_value)
+
 separated_data =dict_by_video_id(list_value)
 for key in separated_data:
     ladder_result=[]
     make_dir("encodding_ladders\\"+ str(int(key)))
     lists_of_data =separated_data[key]
-    #print(lists_of_data)
+ 
     dict_by_bitrate_range = separate_by_range(lists_of_data)
-    #pprint.pprint(dict_by_bitrate_range)
-    #print("VIDEO ID -- " + str(key))
+  
     for key in dict_by_bitrate_range:
         best_vmaf= get_data_with_most_vmaf(dict_by_bitrate_range[key])
         if best_vmaf == None:
@@ -210,9 +183,7 @@ for key in separated_data:
         vmaf=get_vmaf(best_vmaf)
         list_result = make_results_in_lists(bitrate,resolution,vmaf)
         ladder_result.append(list_result)
-        #print("Bitrate Range -- " + str(key))
-       # print(best_vmaf)
-    #print(ladder_result)
+
 
             #final_result.append(list_result)
 
@@ -228,4 +199,3 @@ for key in separated_data:
 
     
     #print(final_result)
-    #break
