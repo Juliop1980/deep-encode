@@ -8,13 +8,14 @@ Video streaming content differs in terms of complexity and requires title-specif
 
 ### Features
 
-Currently, the Scripts contained in this folders allow:
+Currently, the Scripts contained in this folder allow to:
 
 - Build a convolutional neural network model, test it, and predict values with it.
 - Plot data into graphs and calculate the convex hull in order to see how one resolution outperforms the other at a certain bitrate.
 - Build the encodding ladder following Netflix´s bitrate ranges, the best setting for every bitrate range.
 
 ### Development
+The scripts are currently under development. The development is done using *Python 3.6.6* and *Django 1.11.15*. The rest of the requirements can be found in the [requirements file (requirements.txt)](requirements.txt).
 
 ## Set up
 
