@@ -114,6 +114,10 @@ _A filesystem was created in order to organize the results of the scripts and ha
 _In this folder lay all the plots in which for every video id a folder was created._
 _The plot of the respective video has the same name as the id of the video and contains the generated data in terms of bitrate and vmaf at different resolutions._
 
+#### encodding_ladders
+_In this folder lay all the encodding ladders of every video in pdf format._
+_This folder contains folders which have the same name as the video id it corresponds._
+
 ### Important commands
 
 _to run the scripts_
