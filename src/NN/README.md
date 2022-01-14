@@ -107,7 +107,12 @@ pip install -r requirements.txt
 ### Structure of the code
 
 _The features are divided into three different scripts which follow this order by logic: 1st  **neuralnetworkmodel.py**, 2nd **plot_video_data.py** and 3rd **build_encodding_ladder.py**._
+_The first script trains the model and produces the prediction used for the second script to plot the data while the third script builds the final encodding ladder for every video._
+_A filesystem was created in order to organize the results of the scripts and have a log of what is been done._
 
+#### plots
+_In this folder lay all the plots in which for every video id a folder was created._
+_The plot of the respective video has the same name as the id of the video and contains the generated data in terms of bitrate and vmaf at different resolutions._
 
 ### Important commands
 
