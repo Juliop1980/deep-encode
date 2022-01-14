@@ -222,8 +222,8 @@ for key in separated_data:
 
     store_in_excel_encodding_ladder(video_id,ladder_result)
     columns=["Video ID", "Bitrate (kbps)", "Resolution", "VMAF (Predicted)"]
-    file = pd.read_csv("results.csv")
-    file.to_csv("results.csv", header=columns, index=False)
+    #file = pd.read_csv("results.csv")
+    #file.to_csv("results.csv", header=columns, index=False)
         
 
     
