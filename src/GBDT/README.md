@@ -16,6 +16,53 @@ The scripts contained in this folder allow to:
 ### Development
 The development is done using Python 3.9.7. The required moduls are matplotlib, numpy, pandans, scikit-learn, scipy.
 ## Set up
+### Requirements 📋
+
+_**Git**_
+
+```
+sudo apt update
+sudo apt install git
+```
+
+_**Python 3.9.9**_
+```
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3
+```
+
+
+**virtualenv**
+
+_install virtual env with_
+```
+pip install virtualenv
+```
+
+_create a directory to save virtual environments_
+```
+mkdir virtualenvs
+cd virtualenvs
+```
+
+_Set the environment_
+```
+virtualenv env
+```
+
+_To activate use_
+```
+source env/bin/activate
+```
+
+_To deactivate it use_
+```
+source env/bin/deactivate
+```
+
 
 ## Run
 ### Build and Train the model
