@@ -7,9 +7,14 @@ Repository for training and evaluation of different machine learning models to r
 Video streaming content differs in terms of complexity and requires title-specific encoding settings to achieve a certain visual quality. Per-title encoding enables a more efficient and tailored video encoding ladder based on the complexity of a video. To take things a step further, per-scene encoding enables tailored video encoding ladders based on the complexity of each scene, rather than an entire video. However, conventional encoding solutions, such as per-title and per-scene, are computationally heavy and required a high amount of test encodes to identify the optimal encoding settings. The Deep Encode project utilizes machine learning models and provides encoding setting predictions in order to avoid the computationally heavy test encodes.
 
 ### Features
+The scripts contained in this folder allow to:
+
+1. Build a Gradient Boosting Decision Tree model and predict VMAF values using it.
+2. Plot the data points(Bitrate/predcted VMAF) and calculate the convex hull in order to see how one resolution outperforms the other at a certain bitrate.
+3. Build the encodding ladder and get the higher VMAF value at a certain bitrate using it.
 
 ### Development
-
+The development is done using Python 3.9.7. The required moduls are matplotlib, numpy, pandans, scikit-learn, scipy.
 ## Set up
 
 ## Run
