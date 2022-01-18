@@ -1,4 +1,4 @@
-# AWT PJ WS 21/22 Deep Encode 2
+> # AWT PJ WS 21/22 Deep Encode 2
 
 Repository for training and evaluation of different machine learning models to reduce the number of test encodes needed to identify the optimal encoding settings.
 
@@ -31,6 +31,7 @@ The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each vid
 to run this script:
 `python build_encoding_ladder.py`
 
+> python build_encoding_ladder.py
 ## Documentation
 
 ## Tests
