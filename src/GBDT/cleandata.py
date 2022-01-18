@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Nov 23 16:15:17 2021
-
-@author: zrh
-"""
 import pandas as pd
 from sklearn.feature_extraction import DictVectorizer
 
