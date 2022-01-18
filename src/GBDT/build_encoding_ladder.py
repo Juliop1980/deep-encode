@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jan 14 01:23:59 2022
-
-@author: zrh
-"""
 import numpy as np
 import pandas as pd
 from scipy.spatial import ConvexHull
