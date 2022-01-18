@@ -62,7 +62,33 @@ _To deactivate it use_
 ```
 source env/bin/deactivate
 ```
+### Installation 🔧
 
+_Follow these steps once done with the **Requirements**:_
+
+_**NOTE: Keep your virtual environment activated for the installation.**
+
+
+_clone the github repository_
+
+```
+git clone https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
+```
+
+_enter repository_
+
+```
+cd awt-pj-ws21-22-deepencode-2\src\NN
+```
+
+
+
+
+_A requirements file was generated that will allow the automatic installation of the modules with_
+
+```
+pip install -r requirements.txt
+```
 
 ## Run
 ### Build and Train the model
