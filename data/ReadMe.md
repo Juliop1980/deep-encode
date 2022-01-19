@@ -32,7 +32,7 @@ https://www.rstudio.com/products/rstudio/download/
 _**download directory**_
 ```
 Download Folder 
-
+https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2/-/tree/main/data
 
 Open DataInR.rmd with R Studio
 
@@ -40,20 +40,16 @@ Open DataInR.rmd with R Studio
 
 ## Run
 ### Build and Train the model
-The script model-new.py builds the GBDT model and predicts the VMAF values.
+The script dataInR.rmd builds the Linear Regression model and predicts the VMAF values.
 
-to run this script:
-`python model-new.py` 
-### Plot bitrate/VMAF pairs
-The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID.
+Run All 
 
-to run this script:
-`python plot_bitrate_vmaf.py`
-### Build encoding ladder
-The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each video ID.
+### Plot bitrate/VMAF pairs/encodding Ladder
+The dataFrame encoddingLadderFinished contains the final EncodingLadder (videoID, bitrate, resolution, maxVMAF)
 
-to run this script:
-`python build_encoding_ladder.py`
+### Convex hull ###
+
+The ConvexHull Graphs are saved as .png in the Folder.  
 
 ## Documentation
 
