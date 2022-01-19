@@ -18,73 +18,24 @@ The development is done using R 4.1.0. The required moduls are dummies, ggplot2,
 ## Set up
 ### Requirements 📋
 
-_**Git**_
-
-
-
-_**Python 3.9.9**_
+_**R 4.1.2**_
 ```
-sudo apt update
-sudo apt install software-properties-common
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install python3
+download and install R  4.1.2
+https://cran.r-project.org/bin/windows/base/
+
+download and install R Studio
+https://www.rstudio.com/products/rstudio/download/ 
+(free version is enough)
+
 ```
 
-
-**virtualenv**
-
-_install virtual env with_
+_**download directory**_
 ```
-pip install virtualenv
-```
-
-_create a directory to save virtual environments_
-```
-mkdir virtualenvs
-cd virtualenvs
-```
-
-_Set the environment_
-```
-virtualenv env
-```
-
-_To activate use_
-```
-source env/bin/activate
-```
-
-_To deactivate it use_
-```
-source env/bin/deactivate
-```
-### Installation 🔧
-
-_Follow these steps once done with the **Requirements**:_
-
-_**NOTE: Keep your virtual environment activated for the installation.**
+Download Folder 
 
 
-_clone the github repository_
+Open DataInR.rmd with R Studio
 
-```
-git clone https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
-```
-
-_enter repository_
-
-```
-cd awt-pj-ws21-22-deepencode-2\src\NN
-```
-
-
-
-
-_A requirements file was generated that will allow the automatic installation of the modules with_
-
-```
-pip install -r requirements.txt
 ```
 
 ## Run
