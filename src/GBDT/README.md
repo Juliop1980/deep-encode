@@ -78,7 +78,7 @@ git clone https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
 _enter repository_
 
 ```
-cd awt-pj-ws21-22-deepencode-2\src\NN
+cd awt-pj-ws21-22-deepencode-2\src\GBDT
 ```
 
 
