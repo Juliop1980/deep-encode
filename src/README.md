@@ -2,6 +2,8 @@
 
 Repository for training and evaluation of different machine learning models to reduce the number of test encodes needed to identify the optimal encoding settings.
 
+There is a ReadMe.md for every Machine Learning Algorithm, just press on your prefered machine learning Algorithm.
+
 ## About Deep Encode
 ![](docs/images/DeepEncode.png)
 Video streaming content differs in terms of complexity and requires title-specific encoding settings to achieve a certain visual quality. Per-title encoding enables a more efficient and tailored video encoding ladder based on the complexity of a video. To take things a step further, per-scene encoding enables tailored video encoding ladders based on the complexity of each scene, rather than an entire video. However, conventional encoding solutions, such as per-title and per-scene, are computationally heavy and required a high amount of test encodes to identify the optimal encoding settings. The Deep Encode project utilizes machine learning models and provides encoding setting predictions in order to avoid the computationally heavy test encodes.
@@ -92,18 +94,48 @@ _A requirements file was generated that will allow the automatic installation of
 ```
 pip install -r requirements.txt
 ```
+R:
+_**R 4.1.2**_
+```
+download and install R  4.1.2
+https://cran.r-project.org/bin/windows/base/
+
+download and install R Studio
+https://www.rstudio.com/products/rstudio/download/ 
+(free version is enough)
+
+```
+
+_**download directory**_
+```
+Download Folder 
+https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2/-/tree/main/data
+
+Open DataInR.rmd with R Studio
+
+```
 
 ## Run
 ### Build and Train the model
+Python:
 The script model-new.py builds the GBDT model and predicts the VMAF values.
 
 to run this script:
 `python model-new.py` 
+
+R:
+The script dataInR.rmd builds the Linear Regression model and predicts the VMAF values.
+
+Run All 
 ### Plot bitrate/VMAF pairs
+PYthon:
 The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID.
 
 to run this script:
 `python plot_bitrate_vmaf.py`
+
+R:
+The dataFrame encoddingLadderFinished contains the final EncodingLadder (videoID, bitrate, resolution, maxVMAF)
 ### Build encoding ladder
 The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each video ID.
 
@@ -111,11 +143,13 @@ to run this script:
 `python build_encoding_ladder.py`
 
 R:
+The dataFrame encoddingLadderFinished contains the final EncodingLadder (videoID, bitrate, resolution, maxVMAF)
+
+### Convex hull ###
+
+The ConvexHull Graphs are saved as .png in the Folder.  
 
 ## Documentation
-The Documentation is distributed in the following places:
-
-- Code comments, which ensure readability
 
 ## Tests
 
