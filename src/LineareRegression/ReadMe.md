@@ -51,9 +51,6 @@ The dataFrame encoddingLadderFinished contains the final EncodingLadder (videoID
 
 The ConvexHull Graphs are saved as .png in the Folder.  
 
-## Documentation
-
-## Tests
 
 ## Authors
 
