@@ -1,4 +1,4 @@
-﻿# AWT PJ WS 21/22 Deep Encode 2
+# AWT PJ WS 21/22 Deep Encode 2
 
 Repository for training and evaluation of different machine learning models to reduce the number of test encodes needed to identify the optimal encoding settings.
 
@@ -133,13 +133,7 @@ python plot_video_data.py
 python build_encodding_ladder.py
 ```
 
-## Documentation
 
-The Documentation is distributed in the following places:
-
-- **Code comments**, which ensure readability
-
-## Tests
 
 ## Authors
 
