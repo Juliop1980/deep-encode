@@ -107,11 +107,11 @@ def test_GradientBoostingRegressor_learning(*data):
     plt.show()
     
 # plot the relation between the parameters and the scores
-'''    
+    
 test_GradientBoostingRegressor_maxdepth(X_train,X_test,y_train,y_test)
 test_GradientBoostingRegressor_num(X_train,X_test,y_train,y_test)    
 test_GradientBoostingRegressor_learning(X_train,X_test,y_train,y_test)
-'''
+
 
 # choose max_depth = 4, n_estimators = 500, learning_rate = 0.1
 best_regressor = ensemble.GradientBoostingRegressor(
