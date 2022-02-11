@@ -18,6 +18,18 @@ The development is done using Python 3.9.7. The required moduls are matplotlib, 
 ## Set up
 
 ## Run
+### Build and Train the model
+The script model-new.py builds the GBDT model and predicts the VMAF values.
+to run this script:
+`python model-new.py` 
+### Plot bitrate/VMAF pairs
+The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID.
+to run this script:
+`python plot_bitrate_vmaf.py`
+### Build encoding ladder
+The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each video ID.
+to run this script:
+`python build_encoding_ladder.py`
 
 ## Documentation
 
