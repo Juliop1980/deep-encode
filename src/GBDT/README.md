@@ -107,9 +107,6 @@ The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each vid
 to run this script:
 `python build_encoding_ladder.py`
 
-## Documentation
-
-## Tests
 
 ## Authors
 
