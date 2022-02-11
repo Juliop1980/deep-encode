@@ -14,10 +14,13 @@ The scripts contained in this folder allow to:
 3. Build the encodding ladder and get the higher VMAF value at a certain bitrate using it.
 
 ### Development
+Python:
 The development is done using Python 3.9.7. The required moduls are matplotlib, numpy, pandans, scikit-learn, scipy.
+R:
+The development is done using R 4.1.0. The required moduls are dummies, ggplot2, metrics, ggally, dplyr,tidyr,forecast, ggmap, datetime, fpc
 ## Set up
 ### Requirements 📋
-
+Python:
 _**Git**_
 
 ```
@@ -106,6 +109,8 @@ The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each vid
 
 to run this script:
 `python build_encoding_ladder.py`
+
+R:
 
 ## Documentation
 
