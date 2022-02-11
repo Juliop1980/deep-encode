@@ -113,6 +113,9 @@ to run this script:
 R:
 
 ## Documentation
+The Documentation is distributed in the following places:
+
+- Code comments, which ensure readability
 
 ## Tests
 
