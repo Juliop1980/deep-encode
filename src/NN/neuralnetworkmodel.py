@@ -162,10 +162,13 @@ test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
 #print(test_predictions)
 test_predictions = [100 if i >100 else i for i in test_predictions]
 
-df = df[['t_average_bitrate','e_height']]
-df["t_average_vmaf_predicted"] = test_predictions
 
-df.to_csv('data_with_predictions.csv', index=False)
+df = df[['t_average_bitrate','e_height','s_video_id']]
+df["t_average_vmaf_predicted"] = test_predictions
+column_names = ['t_average_bitrate', 'e_height', "t_average_vmaf_predicted",'s_video_id']
+df = df.reindex(columns=column_names)
+
+df.to_csv('data_with_predictions.csv', index=False, sep = ';')
 
 # Uncomment to get the MAE and a standard error, you can set the repeats but be aware that it takes longer with more repeats
 

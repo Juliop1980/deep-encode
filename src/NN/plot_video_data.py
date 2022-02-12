@@ -148,11 +148,9 @@ def separate_resolutions_in_lists(df,video_id):
 
 
 
-df = pd.read_csv('../../data/data_with_predictions_neural_network.csv',delimiter=";")
+df = pd.read_csv('data_with_predictions.csv',delimiter=";")
 
-N = 1
-for i in range(N):
-        del df[df.columns.values[-1]]
+
 
 s_video_ids = df["s_video_id"].tolist()
 s_video_ids = list(set(s_video_ids))
@@ -225,9 +223,9 @@ for i in s_video_ids:
     graph.legend()
     #graph.show()
 
-    graph.show()
+    #graph.show()
     # uncomment to store graph in the directory it belongs (video)
-    #store_graph_directory(graph,i)
+    store_graph_directory(graph,i)
     graph.clf()
     #store_graph_directory(graph,i)
   
