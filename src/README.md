@@ -38,7 +38,10 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install python3
 ```
-
+_**Install Pip**_
+```
+sudo apt install python3-pip
+```
 
 **virtualenv**
 
@@ -74,10 +77,10 @@ _Follow these steps once done with the **Requirements**:_
 _**NOTE: Keep your virtual environment activated for the installation.**
 
 
-_clone the github repository_
+_clone the github repository without history_
 
 ```
-git clone https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
+git clone --depth 1 -b main https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
 ```
 
 _enter repository_
