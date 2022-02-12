@@ -130,42 +130,42 @@ model_conv1D = build_conv1D_model()
 model_conv1D.summary()
 
 # Uncomment these two lines to train the model and validate with test data
-#EPOCHS = 500
-#history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
+EPOCHS = 500
+history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
 
 # Uncomment this line to show the result of the training
-#show_history(history)
+show_history(history)
 
 
 # Uncomment to get the whole dataset as new data to predict the vmaf
-#new_data = df1.iloc[: , :-1]
-#print(new_data)
+new_data = df1.iloc[: , :-1]
+print(new_data)
 
-# Standardize the data
-#mean = new_data.mean(axis =0)
-#std = new_data.std(axis=0)
-#new_data = (new_data - mean) / std
-#new_data_labels =  df1.iloc[: , -1]
+#Standardize the data
+mean = new_data.mean(axis =0)
+std = new_data.std(axis=0)
+new_data = (new_data - mean) / std
+new_data_labels =  df1.iloc[: , -1]
 
-#new_data_numpy = new_data.to_numpy()
-#new_data_labels_numpy =  new_data_labels.to_numpy()
+new_data_numpy = new_data.to_numpy()
+new_data_labels_numpy =  new_data_labels.to_numpy()
 
 
-#new_data_reshaped = new_data_numpy.reshape(new_data_numpy.shape[0],new_data_numpy.shape[1],1)
+new_data_reshaped = new_data_numpy.reshape(new_data_numpy.shape[0],new_data_numpy.shape[1],1)
 
 # Uncomment to evaluate the model
-#[loss, mae] = model_conv1D.evaluate(new_data_reshaped, new_data_labels_numpy, verbose=0)
-#print("Testing set Mean Abs Error:" + str (mae))
+[loss, mae] = model_conv1D.evaluate(new_data_reshaped, new_data_labels_numpy, verbose=0)
+print("Testing set Mean Abs Error:" + str (mae))
 
 # Uncomment to get predicted vmaf for the whole dataset
-#test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
-#print(test_predictions)
-#test_predictions = [100 if i >100 else i for i in test_predictions]
+test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
+print(test_predictions)
+test_predictions = [100 if i >100 else i for i in test_predictions]
 
-#df = df[['t_average_bitrate','e_height']]
-#df["t_average_vmaf_predicted"] = test_predictions
+df = df[['t_average_bitrate','e_height']]
+df["t_average_vmaf_predicted"] = test_predictions
 
-#df.to_csv('data_with_predictions.csv', index=False)
+df.to_csv('data_with_predictions.csv', index=False)
 
 # Uncomment to get the MAE and a standard error, you can set the repeats but be aware that it takes longer with more repeats
 
