@@ -134,12 +134,12 @@ EPOCHS = 500
 history = model_conv1D.fit(train_data_reshaped, train_labels_numpy, epochs=EPOCHS, validation_split=0.2, verbose=1)
 
 # Uncomment this line to show the result of the training
-show_history(history)
+#show_history(history)
 
 
 # Uncomment to get the whole dataset as new data to predict the vmaf
 new_data = df1.iloc[: , :-1]
-print(new_data)
+#print(new_data)
 
 #Standardize the data
 mean = new_data.mean(axis =0)
@@ -159,7 +159,7 @@ print("Testing set Mean Abs Error:" + str (mae))
 
 # Uncomment to get predicted vmaf for the whole dataset
 test_predictions = model_conv1D.predict(new_data_reshaped).flatten()
-print(test_predictions)
+#print(test_predictions)
 test_predictions = [100 if i >100 else i for i in test_predictions]
 
 df = df[['t_average_bitrate','e_height']]
