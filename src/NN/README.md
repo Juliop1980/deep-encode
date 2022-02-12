@@ -14,6 +14,9 @@ Currently, the Scripts contained in this folder allow to:
 - Plot data into graphs and calculate the convex hull in order to see how one resolution outperforms the other at a certain bitrate.
 - Build the encodding ladder following Netflix´s bitrate ranges, the best setting for every bitrate range.
 
+Note:
+The instructions are written for Linux, specifically Ubuntu 20.04.3 LTS
+
 ### Development
 The scripts are currently under development. The development is done using *Python 3.9.9*. The rest of the requirements can be found in the [requirements file (requirements.txt)](requirements.txt).
 
@@ -58,7 +61,7 @@ _install virtual env with_
 pip install virtualenv
 ```
 
-_create a directory to save virtual environments_
+_create a directory to save virtual environments and enter it_
 ```
 mkdir virtualenvs
 cd virtualenvs
@@ -96,7 +99,7 @@ git clone --depth 1 -b main https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-d
 _enter repository_
 
 ```
-cd awt-pj-ws21-22-deepencode-2\src\NN
+cd awt-pj-ws21-22-deepencode-2/src/NN
 ```
 
 
@@ -128,6 +131,7 @@ _This folder contains folders which have the same name as the video id it corres
 
 _to run the scripts_
 
+This one might take a little bit longer to start.
 ```
 python neuralnetworkmodel.py
 ```
