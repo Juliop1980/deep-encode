@@ -150,7 +150,7 @@ def store_in_excel_encodding_ladder(video_id,encodding_ladder):
     return path
 
 
-file_path='../../data/data_with_predictions_neural_network.csv'
+file_path='data_with_predictions.csv'
 make_dir("encodding_ladders")
 final_result = []
 data = get_all_data_prediction(file_path)

@@ -15,6 +15,9 @@ The scripts contained in this folder allow to:
 2. Plot the data points(Bitrate/predcted VMAF) and calculate the convex hull in order to see how one resolution outperforms the other at a certain bitrate.
 3. Build the encodding ladder and get the higher VMAF value at a certain bitrate using it.
 
+Note:
+The instructions are written for Linux, specifically Ubuntu 20.04.3 LTS
+
 ### Development
 Python:
 The development is done using Python 3.9.7. The required moduls are matplotlib, numpy, pandans, scikit-learn, scipy.
@@ -86,7 +89,7 @@ git clone --depth 1 -b main https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-d
 _enter repository_
 
 ```
-cd awt-pj-ws21-22-deepencode-2\src\GBDT
+cd awt-pj-ws21-22-deepencode-2/src/GBDT
 ```
 
 
