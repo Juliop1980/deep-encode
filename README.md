@@ -80,7 +80,7 @@ _Follow these steps once done with the **Requirements**:_
 _**NOTE: Keep your virtual environment activated for the installation.**
 
 
-_clone the github repository without history_
+_clone the github repository without history (no need if you have the src folder, just extract in this case)_
 
 ```
 git clone --depth 1 -b main https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2.git
@@ -112,12 +112,9 @@ https://www.rstudio.com/products/rstudio/download/
 
 ```
 
-_**download directory**_
+_**open R Studio**_
 ```
-Download Folder 
-https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-deepencode-2/-/tree/main/data
-
-Open DataInR.rmd with R Studio
+Open awt-pj-ws21-22-deepencode-2\src\LineareRegression\DataInR.rmd with R Studio
 
 ```
 
