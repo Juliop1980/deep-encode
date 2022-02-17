@@ -19,13 +19,15 @@ def make_dir(name):
 # get the data with the predicted vmaf looking in the path given
 def get_all_data_prediction(file_path):
     df = pd.read_csv(file_path,delimiter=";")
-    df = df.iloc[: , :-1]
+    #df = df.iloc[: , :-1]
     return df
 
 # get dictionary with the key being the video id and the value a list of lists of all the data for that particular video
 def dict_by_video_id(data):
     data_dict = {}
+    #print(data)
     for row in data:
+        #print(row)
         data_dict[row[3]] =[]
 
     for row in data:
@@ -150,7 +152,7 @@ def store_in_excel_encodding_ladder(video_id,encodding_ladder):
     return path
 
 
-file_path='../../data/data_with_predictions_neural_network.csv'
+file_path='data_with_predictions.csv'
 make_dir("encodding_ladders")
 final_result = []
 data = get_all_data_prediction(file_path)
@@ -188,8 +190,9 @@ for key in separated_data:
             #final_result.append(list_result)
 
     #print(video_id)
-    #graph= store_encodding_ladder(video_id, ladder_result)
-    #graph.clf()
+    graph= store_encodding_ladder(video_id, ladder_result)
+    graph.clf()
+    graph.close()
 
     store_in_excel_encodding_ladder(video_id,ladder_result)
     columns=["Video ID", "Bitrate (kbps)", "Resolution", "VMAF (Predicted)"]
