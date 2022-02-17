@@ -12,7 +12,7 @@ from sklearn import ensemble
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 
-df = pd.read_csv('..\data\pse_data.csv')
+df = pd.read_csv('..\..\data\pse_data.csv')
 
 # choose attributes:s_video_id, e_crf , e_width, e_height,e_codec_profile, e_codec_level,t_average_bitrate,t_average_vmaf
 dataset = df[['s_video_id','e_crf','e_width', 'e_height','e_codec_profile','e_codec_level',
