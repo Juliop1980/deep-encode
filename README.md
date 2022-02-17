@@ -5,7 +5,8 @@ Repository for training and evaluation of different machine learning models to r
 There is a ReadMe.md for every Machine Learning Algorithm in their respective folders, just go to the src file and then enter the folder of your prefered machine learning Algorithm.
 In this file, the process to run the gradient boosting decision model and Linear Regression is described. The instructions for the Convolutional Neural Network Model is in its folder and was
 not presented in this file because of the installation, and requirements similarities with Gradient Boosting Decision Tree.
-
+Note:
+The instructions to run the python models are written for Linux, specifically Ubuntu 20.04.3 LTS while the Linear Regression Model (R) is meant for windows
 ## About Deep Encode
 ![](docs/images/DeepEncode.png)
 Video streaming content differs in terms of complexity and requires title-specific encoding settings to achieve a certain visual quality. Per-title encoding enables a more efficient and tailored video encoding ladder based on the complexity of a video. To take things a step further, per-scene encoding enables tailored video encoding ladders based on the complexity of each scene, rather than an entire video. However, conventional encoding solutions, such as per-title and per-scene, are computationally heavy and required a high amount of test encodes to identify the optimal encoding settings. The Deep Encode project utilizes machine learning models and provides encoding setting predictions in order to avoid the computationally heavy test encodes.
@@ -88,7 +89,7 @@ git clone --depth 1 -b main https://git.tu-berlin.de/juliop1996/awt-pj-ws21-22-d
 _enter repository_
 
 ```
-cd awt-pj-ws21-22-deepencode-2\src\GBDT
+cd awt-pj-ws21-22-deepencode-2/src/GBDT
 ```
 
 
