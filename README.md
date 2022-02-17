@@ -132,7 +132,7 @@ The script dataInR.rmd builds the Linear Regression model and predicts the VMAF 
 Run All 
 ### Plot bitrate/VMAF pairs
 PYthon:
-The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID.
+The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID and stores the graphs in the plot_with_convex_hull file.
 
 to run this script:
 `python plot_bitrate_vmaf.py`
@@ -140,7 +140,7 @@ to run this script:
 R:
 The dataFrame encoddingLadderFinished contains the final EncodingLadder (videoID, bitrate, resolution, maxVMAF)
 ### Build encoding ladder
-The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each video ID.
+The script build_encoding_ladder.py builds the bitrate/VMAF ladders for each video ID and stores it in bitrate_ladder excel file
 
 to run this script:
 `python build_encoding_ladder.py`
