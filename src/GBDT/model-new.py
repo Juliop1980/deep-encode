@@ -124,7 +124,7 @@ best_regressor.fit(X_train, y_train)
 y_pred = best_regressor.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 score = best_regressor.score(X_test,y_test)
-print(mae,score)
+print("MAE: " + mae, "Score: " + score)
 
 
 # predict the whole dataset
