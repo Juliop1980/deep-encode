@@ -127,9 +127,7 @@ to run this script (this can take some minutes):
 `python model-new.py` 
 
 R:
-The script dataInR.rmd builds the Linear Regression model and predicts the VMAF values.
-
-Run All 
+The script dataInR.rmd builds the Linear Regression model and predicts the VMAF values. Execute Run All in RStudio 
 ### Plot bitrate/VMAF pairs
 PYthon:
 The script plot_bitrate_vmaf.py plots the data points(bitrate, predicted VMAF) and calculates the convexhull for each video ID and stores the graphs in the plot_with_convex_hull file.
