@@ -5,7 +5,7 @@ A repository to train and evaluate different machine learning models to avoid co
 There is a ReadMe.md for every Machine Learning Algorithm in their respective folders, just go to the src file and then enter the folder of your preferred machine learning Algorithm.
 We explain the process to run the models Boosting Gradient Decision Tree and Linear Regression in this file. The instructions for the Convolutional Neural Network Model are in the folder of the model and not in this file because of the same installation requirements as the Gradient Boosting Decision Tree model.
 
-**Note**: We wrote the instructions to run the python models for Linux, specifically in Ubuntu 20.04.3 LTS (tested). However, instructions for the Linear Regression Model are available for Windows. However, instructions for the Linear Regression Model are available for Windows.
+**Note**: We wrote the instructions to run the python models for Linux, specifically in Ubuntu 20.04.3 LTS (tested).However, instructions for the Linear Regression Model are available for Windows (tested in Windows 10 Home).
 
 ## About Deep Encode
 ![](docs/images/DeepEncode.png)
