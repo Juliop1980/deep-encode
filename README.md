@@ -123,7 +123,7 @@ Open awt-pj-ws21-22-deepencode-2\src\LineareRegression\DataInR.rmd with R Studio
 Python:
 The script model-new.py builds the GBDT model and predicts the VMAF values.
 
-to run this script:
+to run this script (this can take some minutes):
 `python model-new.py` 
 
 R:
