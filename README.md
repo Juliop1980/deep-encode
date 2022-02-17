@@ -157,6 +157,8 @@ The Documentation is distributed in the following places:
 
 
 - Code comments, which ensure readability
+- Paper in the report folder
+- Presentations in the presentation folder
 
 
 ## Authors
